@@ -18,7 +18,7 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 | Cài OpenJDK 25 | ✅ 25.0.4 |
 | Cài tessdata eng+vie | ✅ |
 | Build Gradle + batch transcribe/export | ✅ ~22s → `.mxl` |
-| Ghi memory/plans/reports + push | 🔄 |
+| Ghi memory/plans/reports + push | ✅ Push `hacmieu/master` (`9ecaa033a`) |
 
 ## Việc tiếp theo (gợi ý)
 
