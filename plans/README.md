@@ -6,10 +6,23 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 | Ngày giờ | Kế hoạch | Trạng thái | Tóm tắt |
 |---|---|---|---|
-| 2026-07-26 01:56 | [**Port GUI → Web (PDCA)**](20260726_0156-port-gui-web.md) | 🟡 PLAN xong, chờ duyệt P1 | Chốt chiến lược A (web mỏng + JVM edit-service). 7 phase PDCA. P1 = overlay read-only. |
+| 2026-07-26 02:10 | [**P2 — JVM edit-service** + BÀN GIAO](20260726_0210-p2-jvm-edit-service.md) | ⬜ CHƯA BẮT ĐẦU | **Agent mới đọc file này trước.** Service JVM chỉ-đọc bọc `Book`, thay `omr_extract.py`, làm nền cho P3 sửa. |
+| 2026-07-26 01:56 | [Port GUI → Web (kế hoạch tổng 7 phase)](20260726_0156-port-gui-web.md) | 🟢 P1/7 XONG | Chiến lược A (web mỏng + JVM edit-service). P1 overlay read-only đã đạt Check. |
 | 2026-07-26 01:48 | [GUI + tích hợp web](20260726_0148-gui-va-tich-hop-web.md) | 🟢 ĐANG CHẠY | GUI đã mở trên `.omr`. Chốt: GUI sửa / web nghe — không nhúng Swing. |
 | 2026-07-26 01:03 | [FE kiểu Guitar Pro — alphaTab](20260726_0103-fe-kieu-guitar-pro-alphatab.md) | 🟢 SPIKE 1–3 **XONG** | Player `web/` đã chạy. Editor đầy đủ = sau MVP. |
 | 2026-07-26 00:35 | [Bootstrap Audiveris + thử PDF Yêu Xa](20260726_0035-bootstrap-va-thu-pdf-yeu-xa.md) | ✅ **XONG** | Fork + JDK 25 + batch OMR PDF Drive đã hoàn tất. |
+
+## Tiến độ port GUI → Web (7 phase PDCA)
+
+| Phase | Nội dung | Trạng thái |
+|---|---|---|
+| P1 | Overlay viewer read-only | ✅ **XONG** ([report](../reports/20260726_0210-p1-omr-overlay-viewer.md)) |
+| P2 | JVM service (chỉ đọc) | ⬜ [kế hoạch](20260726_0210-p2-jvm-edit-service.md) |
+| P3 | Ops sửa (remove / assign shape) | ⬜ |
+| P4 | Undo/redo + relation | ⬜ |
+| P5 | Export `.mxl` → alphaTab | ⬜ |
+| P6 | Palette + thêm Inter | ⬜ |
+| P7 | Re-run step | ⬜ |
 
 ## Tiến độ FE alphaTab
 
@@ -24,6 +37,6 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 ## Việc tiếp theo
 
-1. (Tuỳ chọn) Polish UI / seek bar / zoom / horizontal layout.
-2. Editor đầy đủ — sau MVP player.
-3. Post-edit MusicXML / OCR lời Việt.
+1. **P2** — dựng JVM service chỉ-đọc ([kế hoạch + bàn giao](20260726_0210-p2-jvm-edit-service.md)).
+2. Sửa các Inter grade thấp mà P1 đã chỉ ra (nhiều false positive: `NOTEHEAD_BLACK 0.179`, `DYNAMICS_*`, `STACCATO`, `TR`).
+3. OCR lời Việt có dấu — nguồn lỗi lớn nhất hiện tại.

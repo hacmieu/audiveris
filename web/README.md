@@ -12,6 +12,11 @@ npm run dev
 
 Mở http://localhost:5173 — mặc định nạp `public/scores/yeu-xa-sheet-nhac.mxl` (OMR từ Audiveris).
 
+App có 2 chế độ, chuyển bằng nút trên thanh tiêu đề:
+
+- **Player** — phát bản nhạc kiểu Guitar Pro (alphaTab).
+- **OMR Viewer** — xem ảnh sheet gốc + overlay những gì Audiveris đã nhận dạng.
+
 ## Tính năng MVP
 
 - Play / Pause / Stop + cursor theo nhịp
@@ -20,6 +25,18 @@ Mở http://localhost:5173 — mặc định nạp `public/scores/yeu-xa-sheet-n
 - **Tab** — bật tablature guitar chuẩn (EADGBE); MusicXML OMR không có string/fret nên app tự tính fret tối ưu ≤24
 - Track list + Mute / Solo
 - Mở file `.mxl` / `.musicxml` / `.gp*`
+
+## OMR Viewer (Phase 1 của port GUI → web)
+
+Hiển thị `sheet#N/BINARY.png` lấy từ `.omr` kèm hộp bao quanh từng **Inter** mà Audiveris nhận dạng, tô màu theo độ tin cậy (`grade`): đỏ &lt;0.5, cam &lt;0.7, xanh ≥0.7. Bấm 1 ô để xem shape / grade / bounds / các relation, bấm relation để nhảy sang Inter liên quan. Chỉ **đọc**, chưa sửa được.
+
+Dữ liệu đã commit sẵn ở `public/omr/yeu-xa-sheet-nhac/`. Sinh lại cho book khác:
+
+```bash
+python3 tools/omr_extract.py output/<book>.omr web/public/omr
+```
+
+Script (stdlib Python) giải nén `.omr`, ghi mỗi sheet ra `sheet-N.png` + `sheet-N.json` (`inters` có bounds theo pixel ảnh, `relations` có source/target/type) + `index.json`. Đổi `BOOK_DIR` trong `src/OmrViewer.tsx` để trỏ sang book khác.
 
 ## Âm thanh (SoundFont)
 

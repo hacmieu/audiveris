@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 01:56 | [**Port GUI → Web (PDCA)**](20260726_0156-port-gui-web.md) | **MỚI NHẤT.** Chốt chiến lược A: web mỏng + JVM edit-service bọc `Book`/`SIGraph`/`UITask`. `.omr`=ZIP(book.xml+sheet#N.xml+BINARY.png); Inter có shape/grade/bounds. 7 phase, bắt đầu P1 overlay read-only. |
+| 2026-07-26 02:10 | [**P1 xong — OMR Overlay Viewer**](20260726_0210-p1-omr-viewer-xong.md) | **MỚI NHẤT.** Viewer overlay 857 Inter khớp pixel-perfect. Kế tiếp P2 — **bàn giao ở [plans/…-p2-jvm-edit-service.md](../plans/20260726_0210-p2-jvm-edit-service.md)**. |
+| 2026-07-26 01:56 | [Port GUI → Web (PDCA)](20260726_0156-port-gui-web.md) | Chốt chiến lược A: web mỏng + JVM edit-service bọc `Book`/`SIGraph`/`UITask`. `.omr`=ZIP(book.xml+sheet#N.xml+BINARY.png); Inter có shape/grade/bounds. 7 phase. |
 | 2026-07-26 01:48 | [GUI + tích hợp web](20260726_0148-gui-va-tich-hop-web.md) | Đã mở Audiveris GUI trên `.omr` Yêu Xa. Tích hợp = chia vai trò (GUI sửa / web nghe), không nhúng Swing vào browser. |
 | 2026-07-26 01:39 | [Fix Play — vòng lặp SoundFont](20260726_0139-fix-play-soundfont-loop.md) | Nạp SF sau playerReady gây loop; chọn SF một lần lúc init. Play OK. |
 | 2026-07-26 01:30 | [**Tab + SoundFont HQ**](20260726_0130-tab-va-soundfont-hq.md) |  Nút Tab (tuning EADGBE ước lượng từ MIDI). Âm thanh: MuseScore General.sf3 nếu có, không thì sonivox. |
@@ -49,3 +50,12 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 - **Stack**: `web/` = Vite + React + `@coderline/alphatab`.
 - **Chạy**: `cd web && npm run dev` → http://localhost:5173/
 - **Tab** / **SoundFont HQ**: xem [reports/20260726_0130-…](../reports/20260726_0130-tab-va-soundfont-hq.md).
+- 2 chế độ: **Player** (phát) và **OMR Viewer** (xem nhận dạng).
+
+**Port GUI → Web** 🔬
+- Chiến lược **A**: web mỏng + JVM edit-service. 7 phase PDCA, **P1 xong**.
+- Cấu trúc `.omr`: ZIP = `book.xml` + `sheet#N/sheet#N.xml` + `sheet#N/BINARY.png`.
+- XML: `system[@id] → sig → inters/* → bounds(x,y,w,h)`; relation type = **tên thẻ con**.
+- Bounds = pixel ảnh BINARY, overlay không cần quy đổi.
+- Sinh dữ liệu viewer: `python3 tools/omr_extract.py output/<book>.omr web/public/omr`
+- **Bàn giao / bước kế**: [plans/20260726_0210-p2-jvm-edit-service.md](../plans/20260726_0210-p2-jvm-edit-service.md).

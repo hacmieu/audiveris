@@ -1,0 +1,263 @@
+.omr {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.omr-empty {
+  display: grid;
+  place-items: center;
+  padding: 3rem 1.5rem;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.omr-empty pre {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--paper-deep);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  overflow-x: auto;
+  text-align: left;
+}
+
+.omr-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.1rem;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  font-size: 0.85rem;
+}
+
+.omr-zoom {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.omr-zoom span {
+  min-width: 3.2rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.omr-zoom button {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.25rem 0.6rem;
+}
+
+.omr-zoom button:hover {
+  background: var(--accent-soft);
+}
+
+.omr-check,
+.omr-select,
+.omr-range {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink-muted);
+}
+
+.omr-select select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.25rem 0.4rem;
+  background: white;
+  color: var(--ink);
+}
+
+.omr-range input {
+  width: 7rem;
+  accent-color: var(--accent);
+}
+
+.omr-legend {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.omr-legend span {
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  border: 2px solid;
+  font-size: 0.75rem;
+}
+
+.omr-count {
+  margin-left: auto;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.omr-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  min-height: 0;
+}
+
+.omr-canvas {
+  overflow: auto;
+  padding: 1rem;
+  background: var(--paper-deep);
+}
+
+.omr-stage {
+  position: relative;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.omr-stage img {
+  display: block;
+  user-select: none;
+}
+
+.omr-box {
+  position: absolute;
+  padding: 0;
+  border: 1px solid;
+  border-radius: 2px;
+  background: transparent;
+}
+
+.omr-box:hover {
+  background: rgba(15, 118, 110, 0.25);
+}
+
+.omr-box.selected {
+  border-width: 2px;
+  border-color: var(--accent);
+  background: rgba(15, 118, 110, 0.3);
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.35);
+}
+
+/* Confidence colours, shared by boxes, legend and the info panel. */
+.g-high {
+  border-color: #16a34a;
+  color: #15803d;
+}
+
+.g-mid {
+  border-color: #d97706;
+  color: #b45309;
+}
+
+.g-low,
+.g-none {
+  border-color: #dc2626;
+  color: #b91c1c;
+}
+
+.omr-info {
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+  padding: 1rem;
+  overflow: auto;
+}
+
+.omr-info h3 {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.omr-id {
+  color: var(--ink-muted);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+}
+
+.omr-info dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem 0.75rem;
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+}
+
+.omr-info dt {
+  color: var(--ink-muted);
+}
+
+.omr-info dd {
+  margin: 0;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.omr-info h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+.omr-rels {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.omr-rels li {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.omr-dir {
+  color: var(--ink-muted);
+}
+
+.omr-rels button {
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 6px;
+  padding: 0.1rem 0.35rem;
+  color: var(--ink);
+}
+
+.omr-rels button:hover {
+  background: var(--accent-soft);
+}
+
+.omr-rels em {
+  color: var(--ink-muted);
+  font-style: normal;
+  font-size: 0.75rem;
+}
+
+.omr-hint {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .omr-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+  }
+
+  .omr-info {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    max-height: 240px;
+  }
+}

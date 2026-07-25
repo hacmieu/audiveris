@@ -47,9 +47,15 @@
   font-size: 0.85rem;
 }
 
-.topbar-actions {
+.topbar-actions,
+.modes {
   display: flex;
   gap: 0.5rem;
+}
+
+/* .stage/.transport set an explicit display, so [hidden] needs to win. */
+[hidden] {
+  display: none !important;
 }
 
 .primary,
@@ -84,6 +90,18 @@
 .ghost.block {
   width: 100%;
   margin-bottom: 0.75rem;
+}
+
+.modes .chip {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.modes .chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
 }
 
 .stage {

@@ -12,8 +12,10 @@ import {
   synth,
   type json,
 } from '@coderline/alphatab'
+import OmrViewer from './OmrViewer'
 import './App.css'
 
+type Mode = 'player' | 'omr'
 type Score = model.Score
 type Track = model.Track
 const PlayerState = synth.PlayerState
@@ -99,6 +101,7 @@ export default function App() {
   const [showTab, setShowTab] = useState(false)
   const [soundFontName, setSoundFontName] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [mode, setMode] = useState<Mode>('player')
 
   useEffect(() => {
     if (!mainRef.current || !viewportRef.current) return
@@ -344,28 +347,51 @@ export default function App() {
             <p>alphaTab · kiểu Guitar Pro</p>
           </div>
         </div>
-        <div className="topbar-actions">
-          <button type="button" className="ghost" onClick={reloadDefault}>
-            Yêu Xa (OMR)
+        <nav className="modes">
+          <button
+            type="button"
+            className={`chip ${mode === 'player' ? 'active' : ''}`}
+            onClick={() => setMode('player')}
+          >
+            Player
           </button>
           <button
             type="button"
-            className="primary"
-            onClick={() => fileInputRef.current?.click()}
+            className={`chip ${mode === 'omr' ? 'active' : ''}`}
+            onClick={() => setMode('omr')}
           >
-            Mở file…
+            OMR Viewer
           </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".mxl,.xml,.musicxml,.gp,.gpx,.gp3,.gp4,.gp5,.tex"
-            hidden
-            onChange={onPickFile}
-          />
+        </nav>
+
+        <div className="topbar-actions">
+          {mode === 'player' && (
+            <>
+              <button type="button" className="ghost" onClick={reloadDefault}>
+                Yêu Xa (OMR)
+              </button>
+              <button
+                type="button"
+                className="primary"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Mở file…
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".mxl,.xml,.musicxml,.gp,.gpx,.gp3,.gp4,.gp5,.tex"
+                hidden
+                onChange={onPickFile}
+              />
+            </>
+          )}
         </div>
       </header>
 
-      <div className="stage">
+      {mode === 'omr' && <OmrViewer />}
+
+      <div className="stage" hidden={mode !== 'player'}>
         <aside className="sidebar">
           <h2>Tracks</h2>
           <button type="button" className="ghost block" onClick={renderAllTracks}>
@@ -444,7 +470,7 @@ export default function App() {
         </section>
       </div>
 
-      <footer className="transport">
+      <footer className="transport" hidden={mode !== 'player'}>
         <div className="transport-left">
           <button type="button" className="icon" disabled={!ready} onClick={stop} title="Stop">
             ⏹
