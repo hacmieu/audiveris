@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 01:30 | [**Tab + SoundFont HQ**](20260726_0130-tab-va-soundfont-hq.md) | **MỚI NHẤT.** Nút Tab (tuning EADGBE ước lượng từ MIDI). Âm thanh: MuseScore General.sf3 nếu có, không thì sonivox. |
+| 2026-07-26 01:39 | [**Fix Play — vòng lặp SoundFont**](20260726_0139-fix-play-soundfont-loop.md) | **MỚI NHẤT.** Nạp SF sau playerReady gây loop; chọn SF một lần lúc init. Play OK. |
+| 2026-07-26 01:30 | [**Tab + SoundFont HQ**](20260726_0130-tab-va-soundfont-hq.md) |  Nút Tab (tuning EADGBE ước lượng từ MIDI). Âm thanh: MuseScore General.sf3 nếu có, không thì sonivox. |
 | 2026-07-26 01:16 | [alphaTab player đã triển khai](20260726_0116-alphatab-player-da-trien-khai.md) | `web/` Vite+React+alphaTab; play Yêu Xa OK. `cd web && npm run dev` → :5173 |
 | 2026-07-26 01:03 | [Quyết định FE = alphaTab](20260726_0103-quyet-dinh-fe-alphatab.md) | FE kiểu Guitar Pro → chốt **alphaTab** (OSS). Soundslice = SaaS dự phòng. OSMD không đủ. |
 | 2026-07-26 00:43 | [Fork + bootstrap + batch OMR OK](20260726_0043-fork-bootstrap-batch-omr-ok.md) | Fork `hacmieu/audiveris`; JDK 25; tessdata eng+vie; batch PDF Yêu Xa → `.mxl` trong ~22s. |

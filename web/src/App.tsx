@@ -103,97 +103,112 @@ export default function App() {
   useEffect(() => {
     if (!mainRef.current || !viewportRef.current) return
 
-    const api = new AlphaTabApi(mainRef.current, {
-      core: {
-        file: DEFAULT_SCORE,
-        fontDirectory: '/font/',
-      },
-      display: {
-        layoutMode: LayoutMode.Page,
-        scale: 1,
-      },
-      player: {
-        enablePlayer: true,
-        enableCursor: true,
-        enableUserInteraction: true,
-        soundFont: SOUNDFONT_DEFAULT,
-        scrollElement: viewportRef.current,
-      },
-    } as json.SettingsJson)
+    let cancelled = false
+    let api: AlphaTabApi | null = null
 
-    apiRef.current = api
-    setSoundFontName('SONiVOX GM')
-
-    // After the small default SF is ready, try upgrading to MuseScore General
-    // (38 MB, gitignored). Failures keep the working default.
-    let sfCancelled = false
-    const tryUpgradeSoundFont = async () => {
+    const start = async () => {
+      // Prefer HQ soundfont as the *initial* SF when available — never reload
+      // after playerReady (that re-triggers ready and loops forever).
+      let soundFont = SOUNDFONT_DEFAULT
+      let soundFontLabel = 'SONiVOX GM'
       try {
-        const res = await fetch(SOUNDFONT_HQ)
-        if (!res.ok || sfCancelled) return
-        const buf = await res.arrayBuffer()
-        if (sfCancelled || !apiRef.current) return
-        apiRef.current.loadSoundFont(new Uint8Array(buf), false)
-        setSoundFontName('MuseScore General')
+        const head = await fetch(SOUNDFONT_HQ, { method: 'HEAD' })
+        if (head.ok && !cancelled) {
+          soundFont = SOUNDFONT_HQ
+          soundFontLabel = 'MuseScore General'
+        }
       } catch {
-        // keep SONiVOX
+        // keep default
       }
+      if (cancelled || !mainRef.current || !viewportRef.current) return
+
+      api = new AlphaTabApi(mainRef.current, {
+        core: {
+          file: DEFAULT_SCORE,
+          fontDirectory: '/font/',
+        },
+        display: {
+          layoutMode: LayoutMode.Page,
+          scale: 1,
+        },
+        player: {
+          enablePlayer: true,
+          enableCursor: true,
+          enableUserInteraction: true,
+          soundFont,
+          scrollElement: viewportRef.current,
+        },
+      } as json.SettingsJson)
+
+      apiRef.current = api
+      setSoundFontName(soundFontLabel)
+
+      const onRenderStarted = () => setRendering(true)
+      const onRenderFinished = () => setRendering(false)
+      const onScoreLoaded = (score: Score) => {
+        generateTabData(score)
+        setTitle(score.title || 'Không tiêu đề')
+        setArtist(score.artist || '')
+        setTracks([...score.tracks])
+        setActiveTrackIndexes(score.tracks.map((t) => t.index))
+        setMuteMap({})
+        setSoloMap({})
+        setShowTab(false)
+        setError(null)
+      }
+      const onSoundFontLoad = (e: { loaded: number; total: number }) => {
+        setSfProgress(Math.floor((e.loaded / e.total) * 100))
+      }
+      const onPlayerReady = () => {
+        setReady(true)
+        setSfProgress(100)
+      }
+      const onPlayerState = (e: { state: synth.PlayerState }) => {
+        setPlaying(e.state === PlayerState.Playing)
+      }
+      let prevSec = -1
+      const onPosition = (e: { currentTime: number; endTime: number }) => {
+        const sec = Math.floor(e.currentTime / 1000)
+        if (sec === prevSec) return
+        prevSec = sec
+        setPosition(
+          `${formatDuration(e.currentTime)} / ${formatDuration(e.endTime)}`,
+        )
+      }
+      const onError = (e: Error) => {
+        console.error(e)
+        setError(e.message || String(e))
+        setRendering(false)
+      }
+
+      api.renderStarted.on(onRenderStarted)
+      api.renderFinished.on(onRenderFinished)
+      api.scoreLoaded.on(onScoreLoaded)
+      api.soundFontLoad.on(onSoundFontLoad)
+      api.playerReady.on(onPlayerReady)
+      api.playerStateChanged.on(onPlayerState)
+      api.playerPositionChanged.on(onPosition)
+      api.error.on(onError)
     }
 
-    const onRenderStarted = () => setRendering(true)
-    const onRenderFinished = () => setRendering(false)
-    const onScoreLoaded = (score: Score) => {
-      generateTabData(score)
-      setTitle(score.title || 'Không tiêu đề')
-      setArtist(score.artist || '')
-      setTracks([...score.tracks])
-      setActiveTrackIndexes(score.tracks.map((t) => t.index))
-      setMuteMap({})
-      setSoloMap({})
-      setShowTab(false)
-      setError(null)
-    }
-    const onSoundFontLoad = (e: { loaded: number; total: number }) => {
-      setSfProgress(Math.floor((e.loaded / e.total) * 100))
-    }
-    const onPlayerReady = () => {
-      setReady(true)
-      setSfProgress(100)
-      void tryUpgradeSoundFont()
-    }
-    const onPlayerState = (e: { state: synth.PlayerState }) => {
-      setPlaying(e.state === PlayerState.Playing)
-    }
-    let prevSec = -1
-    const onPosition = (e: { currentTime: number; endTime: number }) => {
-      const sec = Math.floor(e.currentTime / 1000)
-      if (sec === prevSec) return
-      prevSec = sec
-      setPosition(`${formatDuration(e.currentTime)} / ${formatDuration(e.endTime)}`)
-    }
-    const onError = (e: Error) => {
-      console.error(e)
-      setError(e.message || String(e))
-      setRendering(false)
-    }
-
-    api.renderStarted.on(onRenderStarted)
-    api.renderFinished.on(onRenderFinished)
-    api.scoreLoaded.on(onScoreLoaded)
-    api.soundFontLoad.on(onSoundFontLoad)
-    api.playerReady.on(onPlayerReady)
-    api.playerStateChanged.on(onPlayerState)
-    api.playerPositionChanged.on(onPosition)
-    api.error.on(onError)
+    void start()
 
     return () => {
-      sfCancelled = true
-      api.destroy()
-      apiRef.current = null
+      cancelled = true
+      api?.destroy()
+      if (apiRef.current === api) apiRef.current = null
     }
   }, [])
 
-  const playPause = useCallback(() => apiRef.current?.playPause(), [])
+  const playPause = useCallback(() => {
+    const api = apiRef.current
+    if (!api) return
+    if (!api.isReadyForPlayback) {
+      setError('Player chưa sẵn sàng — đợi SoundFont nạp xong rồi thử lại')
+      return
+    }
+    api.playPause()
+  }, [])
   const stop = useCallback(() => apiRef.current?.stop(), [])
 
   const toggleTab = useCallback(() => {

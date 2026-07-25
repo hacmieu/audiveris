@@ -36,7 +36,7 @@ curl -L -o web/public/soundfont/MuseScore_General.sf3 \
   "https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf3"
 ```
 
-App tự nâng cấp lên MuseScore General khi file có mặt; nếu không thì giữ SONiVOX.
+App tự chọn MuseScore General làm SoundFont **ban đầu** nếu file có mặt; nếu không thì dùng SONiVOX. (Tránh nạp lại SF sau `playerReady` — sẽ lặp vô hạn và làm nút Play chết.)
 
 Nguồn SoundFont khác đáng thử: [FluidR3](https://member.keymusician.com/Member/FluidR3_GM/index.html), [GeneralUser GS](https://schristiancollins.com/generaluser.php) — copy `.sf2`/`.sf3` vào `public/soundfont/` rồi đổi `SOUNDFONT_HQ` trong `src/App.tsx`.
 
