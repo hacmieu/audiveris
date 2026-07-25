@@ -16,6 +16,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 | SPIKE load `.mxl` + cursor + play | ✅ |
 | Controls: tempo / loop / metronome / count-in | ✅ |
 | Track mixer Mute/Solo | ✅ |
+| Tab (tablature) | ✅ (ước lượng EADGBE từ MIDI) |
+| SoundFont HQ | ✅ MuseScore General (optional) |
 | Quyết định editor (Flat vs tự build) | ⬜ sau MVP |
 
 ## Việc tiếp theo
