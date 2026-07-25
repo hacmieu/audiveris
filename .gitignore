@@ -94,3 +94,6 @@ docs/pdf/build
 # flatpak
 dev/flatpak/.flatpak-builder/
 dev/flatpak/gradle/
+
+# Local OMR run artifacts (keep testdata + reports/artifacts tracked)
+/output/
