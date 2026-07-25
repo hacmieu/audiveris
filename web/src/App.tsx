@@ -20,11 +20,58 @@ const PlayerState = synth.PlayerState
 
 const DEFAULT_SCORE = '/scores/yeu-xa-sheet-nhac.mxl'
 
+// Better-sounding GM soundfont (gitignored, see README); sonivox ships with alphaTab.
+const SOUNDFONT_HQ = '/soundfont/MuseScore_General.sf3'
+const SOUNDFONT_DEFAULT = '/soundfont/sonivox.sf2'
+
+// Standard guitar tuning, top tablature line first (E4 B3 G3 D3 A2 E2).
+const GUITAR_TUNING = [64, 59, 55, 50, 45, 40]
+const MAX_FRET = 24
+
 function formatDuration(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000))
   const m = Math.floor(total / 60)
   const s = total % 60
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+}
+
+/**
+ * OMR MusicXML has no string/fret data. Assign a standard guitar tuning and
+ * compute a playable fret per note so alphaTab can engrave a tab staff.
+ * Fret math must stay exact (midi - openString) so playback pitch is unchanged.
+ */
+function generateTabData(score: Score): void {
+  for (const track of score.tracks) {
+    for (const staff of track.staves) {
+      if (staff.isPercussion) continue
+      staff.stringTuning.tunings = [...GUITAR_TUNING]
+      staff.stringTuning.finish()
+      const stringCount = GUITAR_TUNING.length
+      for (const bar of staff.bars) {
+        for (const voice of bar.voices) {
+          for (const beat of voice.beats) {
+            for (const note of beat.notes) {
+              const midi = note.realValue
+              let bestString = -1
+              let bestFret = Number.MAX_SAFE_INTEGER
+              // tunings[0] is the top tab line; note.string 1 = lowest string.
+              for (let line = 0; line < stringCount; line++) {
+                const fret = midi - GUITAR_TUNING[line]
+                if (fret >= 0 && fret <= MAX_FRET && fret < bestFret) {
+                  bestFret = fret
+                  bestString = stringCount - line
+                }
+              }
+              if (bestString !== -1) {
+                note.string = bestString
+                note.fret = bestFret
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 export default function App() {
@@ -49,6 +96,8 @@ export default function App() {
   const [activeTrackIndexes, setActiveTrackIndexes] = useState<number[]>([])
   const [muteMap, setMuteMap] = useState<Record<number, boolean>>({})
   const [soloMap, setSoloMap] = useState<Record<number, boolean>>({})
+  const [showTab, setShowTab] = useState(false)
+  const [soundFontName, setSoundFontName] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -67,22 +116,41 @@ export default function App() {
         enablePlayer: true,
         enableCursor: true,
         enableUserInteraction: true,
-        soundFont: '/soundfont/sonivox.sf2',
+        soundFont: SOUNDFONT_DEFAULT,
         scrollElement: viewportRef.current,
       },
     } as json.SettingsJson)
 
     apiRef.current = api
+    setSoundFontName('SONiVOX GM')
+
+    // After the small default SF is ready, try upgrading to MuseScore General
+    // (38 MB, gitignored). Failures keep the working default.
+    let sfCancelled = false
+    const tryUpgradeSoundFont = async () => {
+      try {
+        const res = await fetch(SOUNDFONT_HQ)
+        if (!res.ok || sfCancelled) return
+        const buf = await res.arrayBuffer()
+        if (sfCancelled || !apiRef.current) return
+        apiRef.current.loadSoundFont(new Uint8Array(buf), false)
+        setSoundFontName('MuseScore General')
+      } catch {
+        // keep SONiVOX
+      }
+    }
 
     const onRenderStarted = () => setRendering(true)
     const onRenderFinished = () => setRendering(false)
     const onScoreLoaded = (score: Score) => {
+      generateTabData(score)
       setTitle(score.title || 'Không tiêu đề')
       setArtist(score.artist || '')
       setTracks([...score.tracks])
       setActiveTrackIndexes(score.tracks.map((t) => t.index))
       setMuteMap({})
       setSoloMap({})
+      setShowTab(false)
       setError(null)
     }
     const onSoundFontLoad = (e: { loaded: number; total: number }) => {
@@ -91,6 +159,7 @@ export default function App() {
     const onPlayerReady = () => {
       setReady(true)
       setSfProgress(100)
+      void tryUpgradeSoundFont()
     }
     const onPlayerState = (e: { state: synth.PlayerState }) => {
       setPlaying(e.state === PlayerState.Playing)
@@ -118,6 +187,7 @@ export default function App() {
     api.error.on(onError)
 
     return () => {
+      sfCancelled = true
       api.destroy()
       apiRef.current = null
     }
@@ -125,6 +195,24 @@ export default function App() {
 
   const playPause = useCallback(() => apiRef.current?.playPause(), [])
   const stop = useCallback(() => apiRef.current?.stop(), [])
+
+  const toggleTab = useCallback(() => {
+    setShowTab((v) => {
+      const next = !v
+      const api = apiRef.current
+      if (api?.score) {
+        for (const track of api.score.tracks) {
+          for (const staff of track.staves) {
+            if (staff.isPercussion) continue
+            staff.showTablature = next
+            staff.showStandardNotation = true
+          }
+        }
+        api.render()
+      }
+      return next
+    })
+  }, [])
 
   const toggleLoop = useCallback(() => {
     setLoop((v) => {
@@ -358,7 +446,10 @@ export default function App() {
           <div className="meta">
             <strong>{title}</strong>
             <span>{artist || '—'}</span>
-            <span className="time">{position}</span>
+            <span className="time">
+              {position}
+              {soundFontName ? ` · ${soundFontName}` : ''}
+            </span>
           </div>
         </div>
 
@@ -376,6 +467,14 @@ export default function App() {
             />
             <span>{Math.round(speed * 100)}%</span>
           </label>
+          <button
+            type="button"
+            className={`chip ${showTab ? 'active' : ''}`}
+            onClick={toggleTab}
+            title="Hiện/ẩn tablature (guitar chuẩn EADGBE)"
+          >
+            Tab
+          </button>
           <button
             type="button"
             className={`chip ${countIn ? 'active' : ''}`}

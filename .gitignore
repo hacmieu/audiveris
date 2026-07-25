@@ -101,3 +101,5 @@ dev/flatpak/gradle/
 # Frontend (alphaTab player)
 web/node_modules/
 web/dist/
+# HQ soundfont is fetched locally (38 MB), see web/README.md
+web/public/soundfont/MuseScore_General.sf3

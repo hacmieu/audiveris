@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 01:16 | [**alphaTab player đã triển khai**](20260726_0116-alphatab-player-da-trien-khai.md) | **MỚI NHẤT.** `web/` Vite+React+alphaTab; play Yêu Xa OK. `cd web && npm run dev` → :5173 |
+| 2026-07-26 01:30 | [**Tab + SoundFont HQ**](20260726_0130-tab-va-soundfont-hq.md) | **MỚI NHẤT.** Nút Tab (tuning EADGBE ước lượng từ MIDI). Âm thanh: MuseScore General.sf3 nếu có, không thì sonivox. |
+| 2026-07-26 01:16 | [alphaTab player đã triển khai](20260726_0116-alphatab-player-da-trien-khai.md) | `web/` Vite+React+alphaTab; play Yêu Xa OK. `cd web && npm run dev` → :5173 |
 | 2026-07-26 01:03 | [Quyết định FE = alphaTab](20260726_0103-quyet-dinh-fe-alphatab.md) | FE kiểu Guitar Pro → chốt **alphaTab** (OSS). Soundslice = SaaS dự phòng. OSMD không đủ. |
 | 2026-07-26 00:43 | [Fork + bootstrap + batch OMR OK](20260726_0043-fork-bootstrap-batch-omr-ok.md) | Fork `hacmieu/audiveris`; JDK 25; tessdata eng+vie; batch PDF Yêu Xa → `.mxl` trong ~22s. |
 | 2026-07-26 00:35 | [Fork + bootstrap (khởi động)](20260726_0035-fork-bootstrap-va-thu-omr.md) | Phiên đầu: tạo SSOT, tải PDF, phát hiện cần Java 25. |
@@ -39,5 +40,6 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 **FE player (kiểu Guitar Pro)** 🎸
 - **Stack**: `web/` = Vite + React + `@coderline/alphatab` + `@coderline/alphatab-vite`.
 - **Chạy**: `cd web && npm run dev` → http://localhost:5173/
-- **Đã kiểm chứng**: render + play `.mxl` Yêu Xa (cursor, tempo, loop, metronome, mute/solo).
-- Chi tiết: [reports/20260726_0116-trien-khai-alphatab-player.md](../reports/20260726_0116-trien-khai-alphatab-player.md)
+- **Tab**: nút Tab — tự sinh tablature guitar chuẩn từ pitch (OMR không có fret).
+- **SoundFont**: `sonivox` mặc định; HQ = `MuseScore_General.sf3` (tải 1 lần, xem `web/README.md`).
+- Chi tiết: [reports/20260726_0130-tab-va-soundfont-hq.md](../reports/20260726_0130-tab-va-soundfont-hq.md)
