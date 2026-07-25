@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 00:43 | [**Fork + bootstrap + batch OMR OK**](20260726_0043-fork-bootstrap-batch-omr-ok.md) | **MỚI NHẤT.** Fork `hacmieu/audiveris`; JDK 25; tessdata eng+vie; batch PDF Yêu Xa → `.mxl` trong ~22s. |
+| 2026-07-26 01:03 | [**Quyết định FE = alphaTab**](20260726_0103-quyet-dinh-fe-alphatab.md) | **MỚI NHẤT.** FE kiểu Guitar Pro → chốt **alphaTab** (OSS). Soundslice = SaaS dự phòng. OSMD không đủ. |
+| 2026-07-26 00:43 | [Fork + bootstrap + batch OMR OK](20260726_0043-fork-bootstrap-batch-omr-ok.md) | Fork `hacmieu/audiveris`; JDK 25; tessdata eng+vie; batch PDF Yêu Xa → `.mxl` trong ~22s. |
 | 2026-07-26 00:35 | [Fork + bootstrap (khởi động)](20260726_0035-fork-bootstrap-va-thu-omr.md) | Phiên đầu: tạo SSOT, tải PDF, phát hiện cần Java 25. |
 
 ## Sự thật cốt lõi (tra nhanh)
@@ -30,6 +31,11 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 - Local: `testdata/yeu-xa-sheet-nhac.pdf`
 - Kết quả: `output/yeu-xa-sheet-nhac.{omr,mxl,mid,wav}` — báo cáo: [reports/20260726_0043-ket-qua-batch-omr-yeu-xa.md](../reports/20260726_0043-ket-qua-batch-omr-yeu-xa.md)
 
-**Nghe thử (playback)**
+**Nghe thử (playback CLI)**
 - Chuỗi: `.mxl` → `music21` → `.mid` → `fluidsynth` + `~/Library/Audio/Sounds/Banks/MuseScore_General.sf3` → `.wav` → `afplay`.
 - Đã phát thành công 63s ([báo cáo](../reports/20260726_0050-nghe-thu-audio-yeu-xa.md)).
+
+**FE player (kiểu Guitar Pro)** 🎸
+- **Chốt**: [`@coderline/alphatab`](https://alphatab.net/) — MPL-2.0; GP3–8 + MusicXML; tab/staff; synth; tempo/loop/mixer/cursor; sync audio/video.
+- **SaaS dự phòng**: Soundslice Embed.
+- **Không dùng OSMD** làm lõi use case này (xem [khảo sát](../reports/20260726_0103-khao-sat-fe-kieu-guitar-pro.md)).
