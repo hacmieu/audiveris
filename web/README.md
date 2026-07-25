@@ -26,6 +26,8 @@ App có 2 chế độ, chuyển bằng nút trên thanh tiêu đề:
 - Track list + Mute / Solo
 - Mở file `.mxl` / `.musicxml` / `.gp*`
 
+## OMR Viewer (Phase 1–3)
+
 Hiển thị ảnh sheet + overlay Inter. Dropdown **Lớp** (Capella). Khi API chạy: **đổi TextRole**, **xóa Inter**, Undo/Redo, Save `.omr`.
 
 ```bash
