@@ -6,7 +6,8 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 
 | Ngày giờ | Báo cáo | Tóm tắt |
 |---|---|---|
-| 2026-07-26 00:43 | [**✅ Kết quả batch OMR Yêu Xa**](20260726_0043-ket-qua-batch-omr-yeu-xa.md) | **MỚI NHẤT.** Audiveris 5.11.0 + JDK 25 batch OK trong ~22s → `.omr` + `.mxl` (30 measures, 140 notes). OCR lời Việt còn lỗi. Artifact: [artifacts/yeu-xa-sheet-nhac.mxl](artifacts/yeu-xa-sheet-nhac.mxl). |
+| 2026-07-26 00:50 | [**✅ Nghe thử audio Yêu Xa**](20260726_0050-nghe-thu-audio-yeu-xa.md) | **MỚI NHẤT.** `.mxl` → MIDI (music21) → WAV 63s (fluidsynth + MuseScore_General.sf3) → phát bằng `afplay`. |
+| 2026-07-26 00:43 | [**✅ Kết quả batch OMR Yêu Xa**](20260726_0043-ket-qua-batch-omr-yeu-xa.md) | Audiveris 5.11.0 + JDK 25 batch OK trong ~22s → `.omr` + `.mxl` (30 measures, 140 notes). OCR lời Việt còn lỗi. Artifact: [artifacts/yeu-xa-sheet-nhac.mxl](artifacts/yeu-xa-sheet-nhac.mxl). |
 
 ## Kết luận nổi bật
 
