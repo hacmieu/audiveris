@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 01:03 | [**Quyết định FE = alphaTab**](20260726_0103-quyet-dinh-fe-alphatab.md) | **MỚI NHẤT.** FE kiểu Guitar Pro → chốt **alphaTab** (OSS). Soundslice = SaaS dự phòng. OSMD không đủ. |
+| 2026-07-26 01:16 | [**alphaTab player đã triển khai**](20260726_0116-alphatab-player-da-trien-khai.md) | **MỚI NHẤT.** `web/` Vite+React+alphaTab; play Yêu Xa OK. `cd web && npm run dev` → :5173 |
+| 2026-07-26 01:03 | [Quyết định FE = alphaTab](20260726_0103-quyet-dinh-fe-alphatab.md) | FE kiểu Guitar Pro → chốt **alphaTab** (OSS). Soundslice = SaaS dự phòng. OSMD không đủ. |
 | 2026-07-26 00:43 | [Fork + bootstrap + batch OMR OK](20260726_0043-fork-bootstrap-batch-omr-ok.md) | Fork `hacmieu/audiveris`; JDK 25; tessdata eng+vie; batch PDF Yêu Xa → `.mxl` trong ~22s. |
 | 2026-07-26 00:35 | [Fork + bootstrap (khởi động)](20260726_0035-fork-bootstrap-va-thu-omr.md) | Phiên đầu: tạo SSOT, tải PDF, phát hiện cần Java 25. |
 
@@ -36,6 +37,7 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 - Đã phát thành công 63s ([báo cáo](../reports/20260726_0050-nghe-thu-audio-yeu-xa.md)).
 
 **FE player (kiểu Guitar Pro)** 🎸
-- **Chốt**: [`@coderline/alphatab`](https://alphatab.net/) — MPL-2.0; GP3–8 + MusicXML; tab/staff; synth; tempo/loop/mixer/cursor; sync audio/video.
-- **SaaS dự phòng**: Soundslice Embed.
-- **Không dùng OSMD** làm lõi use case này (xem [khảo sát](../reports/20260726_0103-khao-sat-fe-kieu-guitar-pro.md)).
+- **Stack**: `web/` = Vite + React + `@coderline/alphatab` + `@coderline/alphatab-vite`.
+- **Chạy**: `cd web && npm run dev` → http://localhost:5173/
+- **Đã kiểm chứng**: render + play `.mxl` Yêu Xa (cursor, tempo, loop, metronome, mute/solo).
+- Chi tiết: [reports/20260726_0116-trien-khai-alphatab-player.md](../reports/20260726_0116-trien-khai-alphatab-player.md)

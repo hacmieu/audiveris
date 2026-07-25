@@ -97,3 +97,7 @@ dev/flatpak/gradle/
 
 # Local OMR run artifacts (keep testdata + reports/artifacts tracked)
 /output/
+
+# Frontend (alphaTab player)
+web/node_modules/
+web/dist/

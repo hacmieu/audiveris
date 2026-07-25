@@ -1,7 +1,7 @@
 # FE kiểu Guitar Pro — kế hoạch chốt alphaTab
 
-**Trạng thái**: 🟡 ĐỀ XUẤT (chờ SPIKE)  
-**Thời điểm**: 2026-07-26 01:03
+**Trạng thái**: 🟢 SPIKE 1–3 XONG (player đã chạy) · bước 4 (editor) còn lại  
+**Thời điểm**: 2026-07-26 01:03 → cập nhật 01:16
 
 ## Mục tiêu
 
@@ -11,28 +11,21 @@ Giao diện web đủ công cụ **chơi / luyện** bản nhạc sau OMR (Audiv
 
 | Lớp | Công nghệ |
 |---|---|
-| Player / engraving | **`@coderline/alphatab`** (MPL-2.0) |
-| UI shell | Next.js + TypeScript (có thể tái dùng pattern từ kế hoạch oemer web) |
+| Player / engraving | **`@coderline/alphatab`** (MPL-2.0) + `@coderline/alphatab-vite` |
+| UI shell | Vite + React + TypeScript (`web/`) |
 | Nguồn dữ liệu MVP | MusicXML `.mxl` từ Audiveris |
 | Dự phòng SaaS | Soundslice Embed nếu cần UX học guitar sẵn + video sync |
-
-**Không** lấy OSMD làm lõi cho use case này (đã đủ cho “xem + nghe sheet”, thiếu tab/mixer/GP).
 
 ## Các bước
 
 | # | Bước | Verify |
 |---|---|---|
-| 1 | SPIKE: alphaTab load `testdata`/output `yeu-xa-sheet-nhac.mxl` | Cursor + play nghe được |
-| 2 | Controls: play/pause, tempo, loop, metronome | Đủ 4 nút hoạt động |
-| 3 | Track mixer (nếu score đa track) | Mute/solo/volume |
-| 4 | Quyết định editor (Flat vs tự build) sau MVP | Báo cáo riêng |
-
-## Rủi ro
-
-- MusicXML từ OMR có thể thiếu guitar tab/string → UI vẫn play được staff; tab cần dữ liệu GP hoặc annotate sau.
-- alphaTab là SDK → phải tự viết chrome UI (không phải app GP clone sẵn).
-- MPL-2.0: giữ license files / attribution.
+| 1 | SPIKE: alphaTab load `yeu-xa-sheet-nhac.mxl` | ✅ Cursor + play |
+| 2 | Controls: play/pause, tempo, loop, metronome | ✅ (+ count-in) |
+| 3 | Track mixer (mute/solo) | ✅ |
+| 4 | Quyết định editor (Flat vs tự build) sau MVP | ⬜ |
 
 ## Báo cáo liên quan
 
-- [Khảo sát đầy đủ](../reports/20260726_0103-khao-sat-fe-kieu-guitar-pro.md)
+- [Khảo sát](../reports/20260726_0103-khao-sat-fe-kieu-guitar-pro.md)
+- [Triển khai](../reports/20260726_0116-trien-khai-alphatab-player.md)
