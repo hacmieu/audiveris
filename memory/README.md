@@ -6,7 +6,7 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 02:21 | [**Capella + P2 xong**](20260726_0221-p2-va-capella-xong.md) | **MỚI NHẤT.** Có tách nhạc/text như Capella (`TextRole`). P2 API live 857/831. Bàn giao P3: [plans/…-p3-sua-inter.md](../plans/20260726_0221-p3-sua-inter.md). |
+| 2026-07-26 02:28 | [**P3 xong — sửa Inter**](20260726_0228-p3-sua-inter-xong.md) | **MỚI NHẤT.** Xóa/đổi role/undo/save từ web. Book: 856 inters, Ballade→Lyrics. Bàn giao P4: [plans/…-p4-…](../plans/20260726_0228-p4-relation-va-role-sau.md). |
 | 2026-07-26 02:21 | [Capella: phân lớp nhạc/text](20260726_0221-capella-phan-lop-nhac-text.md) | Audiveris = Inter type + TextRole. Yêu Xa: 660 nhạc / 197 text; lời hay bị Direction. |
 | 2026-07-26 01:56 | [Port GUI → Web (PDCA)](20260726_0156-port-gui-web.md) | Chốt chiến lược A: web mỏng + JVM edit-service bọc `Book`/`SIGraph`/`UITask`. `.omr`=ZIP(book.xml+sheet#N.xml+BINARY.png); Inter có shape/grade/bounds. 7 phase. |
 | 2026-07-26 01:48 | [GUI + tích hợp web](20260726_0148-gui-va-tich-hop-web.md) | Đã mở Audiveris GUI trên `.omr` Yêu Xa. Tích hợp = chia vai trò (GUI sửa / web nghe), không nhúng Swing vào browser. |
@@ -54,8 +54,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 - 2 chế độ: **Player** (phát) và **OMR Viewer** (xem nhận dạng).
 
 **Port GUI → Web** 🔬
-- Chiến lược **A**: web mỏng + JVM edit-service. 7 phase PDCA, **P1+P2 xong**.
-- **Capella**: tách nhạc/text qua Inter type + `TextRole` (Title/Lyrics/ChordName/Direction…). Viewer có dropdown Lớp.
-- Cấu trúc `.omr`: ZIP = `book.xml` + `sheet#N/sheet#N.xml` + `sheet#N/BINARY.png`.
-- API P2: `OmrApiServer` qua `-run org.audiveris.omr.web.OmrApiServer` → `:8080/api/…`
-- **Bàn giao / bước kế**: [plans/20260726_0221-p3-sua-inter.md](../plans/20260726_0221-p3-sua-inter.md).
+- Chiến lược **A**: web mỏng + JVM edit-service. 7 phase PDCA, **P1–P3 xong**.
+- **Capella**: tách nhạc/text + đổi `TextRole` từ web; xóa Inter; Undo/Redo; Save `.omr`.
+- API: `OmrApiServer` → `:8080/api/…` (GET + DELETE inter + POST role/undo/redo/save)
+- Book Yêu Xa sau P3 Check: **856** inters; `#3143` Lyrics; `#1269` đã xóa.
+- **Bàn giao / bước kế**: [plans/20260726_0228-p4-relation-va-role-sau.md](../plans/20260726_0228-p4-relation-va-role-sau.md).

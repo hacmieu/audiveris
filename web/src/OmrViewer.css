@@ -246,6 +246,57 @@
   border-style: dashed;
 }
 
+.omr-edit {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.omr-edit button,
+.omr-actions button {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.25rem 0.65rem;
+}
+
+.omr-edit button:hover:not(:disabled),
+.omr-actions button:hover:not(:disabled) {
+  background: var(--accent-soft);
+}
+
+.omr-edit button:disabled,
+.omr-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.omr-actions {
+  margin: 0 0 1rem;
+}
+
+.omr-actions .danger {
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.omr-role {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.15rem 0.35rem;
+  background: white;
+  color: var(--ink);
+  max-width: 100%;
+}
+
+.omr-toast {
+  padding: 0.35rem 1.25rem;
+  background: var(--accent-soft);
+  color: var(--ink);
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
 .omr-value {
   font-family: var(--font-display);
   font-size: 1.05rem;

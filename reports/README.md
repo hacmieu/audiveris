@@ -6,7 +6,7 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 
 | Ngày giờ | Báo cáo | Tóm tắt |
 |---|---|---|
-| 2026-07-26 02:21 | [**✅ P2 — OmrApiServer + lớp Capella**](20260726_0221-p2-omr-api-va-lop-capella.md) | **MỚI NHẤT.** API live 857/831; viewer `· api`. Capella: có tách nhạc/text (`TextRole`). Lời Việt hay bị Direction. |
+| 2026-07-26 02:28 | [**✅ P3 — Sửa Inter qua API**](20260726_0228-p3-sua-inter.md) | **MỚI NHẤT.** DELETE inter + POST TextRole + undo/redo/save. Check: xóa NOTEHEAD_BLACK #1269, Ballade→Lyrics, persist trong `.omr`. |
 | 2026-07-26 02:10 | [✅ P1 — OMR Overlay Viewer](20260726_0210-p1-omr-overlay-viewer.md) | 857/857 Inter overlay khớp pixel-perfect. Lọc grade lộ OCR dấu Việt yếu + false positive. |
 | 2026-07-26 01:56 | [Khả thi Port GUI → Web](20260726_0156-port-gui-web.md) | ~289 file Swing, không REST → không compile/không rewrite JS. Chọn A: web mỏng + JVM service tái dùng model. Bằng chứng `.omr`/Inter/bounds. |
 | 2026-07-26 01:48 | [GUI + tích hợp web](20260726_0148-gui-va-tich-hop-web.md) | Đã launch Audiveris GUI. Tích hợp với alphaTab = chia vai trò qua `.mxl`, không nhúng GUI vào browser. |
@@ -22,5 +22,5 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 1. Fork: [hacmieu/audiveris](https://github.com/hacmieu/audiveris) · Java 25.
 2. Batch OMR + playback CLI + **FE alphaTab** đều đã chạy được với file Yêu Xa.
 3. FE: `cd web && npm run dev` → http://localhost:5173/ (2 chế độ: Player · OMR Viewer).
-4. Port GUI → web: chiến lược A, **P1+P2/7 xong**. Capella: tách nhạc/text OK. Bàn giao P3: [plans/…-p3-sua-inter.md](../plans/20260726_0221-p3-sua-inter.md).
-5. Chất lượng OMR: OCR lời Việt có dấu + TextRole lời hay thành Direction.
+4. Port GUI → web: **P1–P3/7 xong** (xem/sửa OMR từ browser). Bàn giao P4: [plans/…-p4-…](../plans/20260726_0228-p4-relation-va-role-sau.md).
+5. Chất lượng OMR: OCR lời Việt + TextRole; đã demo sửa Capella-style từ web.

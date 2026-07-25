@@ -54,7 +54,33 @@ const TEXT_TYPES = new Set([
   'chord-sentence',
 ])
 
+const TEXT_ROLES = [
+  'UnknownRole',
+  'Lyrics',
+  'ChordName',
+  'Title',
+  'Direction',
+  'Number',
+  'PartName',
+  'Creator',
+  'CreatorArranger',
+  'CreatorComposer',
+  'CreatorLyricist',
+  'Rights',
+  'EndingNumber',
+  'EndingText',
+  'Rehearsal',
+  'Metronome',
+] as const
+
 type Layer = 'all' | 'music' | 'text' | 'lyrics' | 'chords' | 'title' | 'direction'
+
+interface EditStatus {
+  canUndo: boolean
+  canRedo: boolean
+  dirty: boolean
+  message: string | null
+}
 
 function gradeClass(grade: number | null): string {
   if (grade === null) return 'g-none'
@@ -118,6 +144,116 @@ export default function OmrViewer() {
   const [typeFilter, setTypeFilter] = useState('*')
   const [maxGrade, setMaxGrade] = useState(1)
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [edit, setEdit] = useState<EditStatus>({
+    canUndo: false,
+    canRedo: false,
+    dirty: false,
+    message: null,
+  })
+
+  const refreshStatus = useCallback(async () => {
+    if (source !== 'api') return
+    try {
+      const r = await fetch('/api/health')
+      if (!r.ok) return
+      const j = (await r.json()) as {
+        canUndo?: boolean
+        canRedo?: boolean
+        dirty?: boolean
+      }
+      setEdit((e) => ({
+        ...e,
+        canUndo: Boolean(j.canUndo),
+        canRedo: Boolean(j.canRedo),
+        dirty: Boolean(j.dirty),
+      }))
+    } catch {
+      // ignore
+    }
+  }, [source])
+
+  const reload = useCallback(async (keepSelection = true) => {
+    const d = await loadSheet()
+    setData(d)
+    setSource(d.image.startsWith('/api/') ? 'api' : 'static')
+    if (!keepSelection) setSelectedId(null)
+  }, [])
+
+  const mutate = useCallback(
+    async (label: string, run: () => Promise<Response>) => {
+      if (source !== 'api') {
+        setEdit((e) => ({
+          ...e,
+          message: 'Cần OmrApiServer (P2) để sửa — đang dùng snapshot tĩnh',
+        }))
+        return
+      }
+      setBusy(true)
+      try {
+        const r = await run()
+        const j = (await r.json()) as {
+          error?: string
+          canUndo?: boolean
+          canRedo?: boolean
+          dirty?: boolean
+          action?: string
+          detail?: string
+        }
+        if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
+        await reload(true)
+        setEdit({
+          canUndo: Boolean(j.canUndo),
+          canRedo: Boolean(j.canRedo),
+          dirty: Boolean(j.dirty),
+          message: `${label}: ${j.detail ?? j.action ?? 'ok'}`,
+        })
+      } catch (err) {
+        setEdit((e) => ({
+          ...e,
+          message: err instanceof Error ? err.message : String(err),
+        }))
+      } finally {
+        setBusy(false)
+      }
+    },
+    [source, reload],
+  )
+
+  const deleteSelected = useCallback(() => {
+    if (selectedId === null) return
+    if (!window.confirm(`Xóa Inter #${selectedId}?`)) return
+    const id = selectedId
+    void mutate('Xóa', () =>
+      fetch(`/api/sheet/1/inter/${id}`, { method: 'DELETE' }),
+    ).then(() => setSelectedId(null))
+  }, [selectedId, mutate])
+
+  const changeRole = useCallback(
+    (role: string) => {
+      if (selectedId === null) return
+      void mutate('Đổi role', () =>
+        fetch(`/api/sheet/1/inter/${selectedId}/role`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ role }),
+        }),
+      )
+    },
+    [selectedId, mutate],
+  )
+
+  const undo = useCallback(() => {
+    void mutate('Undo', () => fetch('/api/book/undo', { method: 'POST' }))
+  }, [mutate])
+
+  const redo = useCallback(() => {
+    void mutate('Redo', () => fetch('/api/book/redo', { method: 'POST' }))
+  }, [mutate])
+
+  const save = useCallback(() => {
+    void mutate('Save', () => fetch('/api/book/save', { method: 'POST' }))
+  }, [mutate])
 
   useEffect(() => {
     let cancelled = false
@@ -134,6 +270,10 @@ export default function OmrViewer() {
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    void refreshStatus()
+  }, [refreshStatus, data])
 
   const byId = useMemo(() => {
     const map = new Map<number, Inter>()
@@ -306,8 +446,24 @@ export default function OmrViewer() {
         <div className="omr-count">
           {visible.length} hiển thị · {data.relations.length} relation
           {source ? ` · ${source}` : ''}
+          {edit.dirty ? ' · dirty' : ''}
         </div>
+
+        {source === 'api' && (
+          <div className="omr-edit">
+            <button type="button" disabled={busy || !edit.canUndo} onClick={undo}>
+              Undo
+            </button>
+            <button type="button" disabled={busy || !edit.canRedo} onClick={redo}>
+              Redo
+            </button>
+            <button type="button" disabled={busy || !edit.dirty} onClick={save}>
+              Save .omr
+            </button>
+          </div>
+        )}
       </div>
+      {edit.message && <div className="omr-toast">{edit.message}</div>}
 
       <div className="omr-body">
         <div className="omr-canvas" ref={canvasRef}>
@@ -359,7 +515,32 @@ export default function OmrViewer() {
                     <dd className="omr-value">{selected.value}</dd>
                   </>
                 )}
-                {selected.role && (
+                {selected.role !== undefined &&
+                  (selected.type === 'sentence' ||
+                    selected.type === 'lyric-line' ||
+                    selected.type === 'chord-sentence') && (
+                  <>
+                    <dt>Role</dt>
+                    <dd>
+                      <select
+                        className="omr-role"
+                        disabled={busy || source !== 'api'}
+                        value={selected.role ?? 'UnknownRole'}
+                        onChange={(e) => changeRole(e.target.value)}
+                      >
+                        {TEXT_ROLES.map((role) => (
+                          <option key={role} value={role}>
+                            {role}
+                          </option>
+                        ))}
+                      </select>
+                    </dd>
+                  </>
+                )}
+                {selected.role &&
+                  selected.type !== 'sentence' &&
+                  selected.type !== 'lyric-line' &&
+                  selected.type !== 'chord-sentence' && (
                   <>
                     <dt>Role</dt>
                     <dd>{selected.role}</dd>
@@ -384,6 +565,16 @@ export default function OmrViewer() {
                 <dt>Lớp</dt>
                 <dd>{TEXT_TYPES.has(selected.type) ? 'Text' : 'Nhạc'}</dd>
               </dl>
+              <div className="omr-actions">
+                <button
+                  type="button"
+                  className="danger"
+                  disabled={busy || source !== 'api'}
+                  onClick={deleteSelected}
+                >
+                  Xóa Inter
+                </button>
+              </div>
               <h4>Relations ({selectedRelations.length})</h4>
               <ul className="omr-rels">
                 {selectedRelations.map((rel, i) => (

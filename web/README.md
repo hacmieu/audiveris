@@ -26,17 +26,15 @@ App có 2 chế độ, chuyển bằng nút trên thanh tiêu đề:
 - Track list + Mute / Solo
 - Mở file `.mxl` / `.musicxml` / `.gp*`
 
-## OMR Viewer (Phase 1–2 của port GUI → web)
-
-Hiển thị ảnh sheet + overlay Inter. Có dropdown **Lớp** kiểu Capella (Nhạc / Text / Lời / Hợp âm / Tiêu đề). Ưu tiên dữ liệu live từ JVM API; fallback file tĩnh.
+Hiển thị ảnh sheet + overlay Inter. Dropdown **Lớp** (Capella). Khi API chạy: **đổi TextRole**, **xóa Inter**, Undo/Redo, Save `.omr`.
 
 ```bash
-# Terminal 1 — API
+# Terminal 1 — API (đọc + sửa)
 ./gradlew :app:run --no-daemon \
   -PcmdLineArgs="-batch,-run,org.audiveris.omr.web.OmrApiServer,/ABS/output/yeu-xa-sheet-nhac.omr"
 
 # Terminal 2 — Web
-cd web && npm run dev   # OMR Viewer phải hiện "· api"
+cd web && npm run dev   # OMR Viewer: · api + Undo/Redo/Save
 ```
 
 Sinh lại snapshot tĩnh:

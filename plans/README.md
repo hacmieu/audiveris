@@ -6,7 +6,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 | Ngày giờ | Kế hoạch | Trạng thái | Tóm tắt |
 |---|---|---|---|
-| 2026-07-26 02:21 | [**P3 — Sửa Inter** + BÀN GIAO](20260726_0221-p3-sua-inter.md) | ⬜ CHƯA BẮT ĐẦU | **Agent mới đọc file này.** Remove + đổi TextRole + save/undo qua API. |
+| 2026-07-26 02:28 | [**P4 — Relation / Lyrics convert** + BÀN GIAO](20260726_0228-p4-relation-va-role-sau.md) | ⬜ CHƯA BẮT ĐẦU | **Agent mới đọc file này.** Link/unlink hoặc convert Lyrics đầy đủ; hoặc nhảy P5 export. |
+| 2026-07-26 02:21 | [P3 — Sửa Inter](20260726_0221-p3-sua-inter.md) | ✅ **XONG** | Remove + TextRole + undo/redo/save. Report: [../reports/20260726_0228-…](../reports/20260726_0228-p3-sua-inter.md). |
 | 2026-07-26 02:10 | [P2 — JVM edit-service](20260726_0210-p2-jvm-edit-service.md) | ✅ **XONG** | OmrApiServer (RunClass+HttpServer). Report: [../reports/20260726_0221-…](../reports/20260726_0221-p2-omr-api-va-lop-capella.md). |
 | 2026-07-26 01:56 | [Port GUI → Web (kế hoạch tổng 7 phase)](20260726_0156-port-gui-web.md) | 🟢 P1/7 XONG | Chiến lược A (web mỏng + JVM edit-service). P1 overlay read-only đã đạt Check. |
 | 2026-07-26 01:48 | [GUI + tích hợp web](20260726_0148-gui-va-tich-hop-web.md) | 🟢 ĐANG CHẠY | GUI đã mở trên `.omr`. Chốt: GUI sửa / web nghe — không nhúng Swing. |
@@ -19,8 +20,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 |---|---|---|
 | P1 | Overlay viewer read-only | ✅ **XONG** ([report](../reports/20260726_0210-p1-omr-overlay-viewer.md)) |
 | P2 | JVM service (chỉ đọc) + lớp Capella | ✅ **XONG** ([report](../reports/20260726_0221-p2-omr-api-va-lop-capella.md)) |
-| P3 | Ops sửa (remove / TextRole / assign) | ⬜ [kế hoạch](20260726_0221-p3-sua-inter.md) |
-| P4 | Undo/redo + relation | ⬜ |
+| P3 | Ops sửa (remove / TextRole / undo / save) | ✅ **XONG** ([report](../reports/20260726_0228-p3-sua-inter.md)) |
+| P4 | Undo sâu / relation / Lyrics convert | ⬜ [kế hoạch](20260726_0228-p4-relation-va-role-sau.md) |
 | P5 | Export `.mxl` → alphaTab | ⬜ |
 | P6 | Palette + thêm Inter | ⬜ |
 | P7 | Re-run step | ⬜ |
@@ -38,6 +39,6 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 ## Việc tiếp theo
 
-1. **P3** — remove Inter + đổi TextRole (Capella) qua API ([kế hoạch](20260726_0221-p3-sua-inter.md)).
-2. Sửa false positive grade thấp + gán lại lời Việt từ Direction → Lyrics.
+1. **P4** — relation hoặc convert Lyrics đầy đủ ([kế hoạch](20260726_0228-p4-relation-va-role-sau.md)); hoặc **P5** export `.mxl` để nghe lại.
+2. Tiếp tục gán lại Direction → Lyrics cho lời Việt còn lại.
 3. OCR lời Việt có dấu.
