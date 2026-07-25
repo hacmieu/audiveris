@@ -26,17 +26,24 @@ App có 2 chế độ, chuyển bằng nút trên thanh tiêu đề:
 - Track list + Mute / Solo
 - Mở file `.mxl` / `.musicxml` / `.gp*`
 
-## OMR Viewer (Phase 1 của port GUI → web)
+## OMR Viewer (Phase 1–2 của port GUI → web)
 
-Hiển thị `sheet#N/BINARY.png` lấy từ `.omr` kèm hộp bao quanh từng **Inter** mà Audiveris nhận dạng, tô màu theo độ tin cậy (`grade`): đỏ &lt;0.5, cam &lt;0.7, xanh ≥0.7. Bấm 1 ô để xem shape / grade / bounds / các relation, bấm relation để nhảy sang Inter liên quan. Chỉ **đọc**, chưa sửa được.
+Hiển thị ảnh sheet + overlay Inter. Có dropdown **Lớp** kiểu Capella (Nhạc / Text / Lời / Hợp âm / Tiêu đề). Ưu tiên dữ liệu live từ JVM API; fallback file tĩnh.
 
-Dữ liệu đã commit sẵn ở `public/omr/yeu-xa-sheet-nhac/`. Sinh lại cho book khác:
+```bash
+# Terminal 1 — API
+./gradlew :app:run --no-daemon \
+  -PcmdLineArgs="-batch,-run,org.audiveris.omr.web.OmrApiServer,/ABS/output/yeu-xa-sheet-nhac.omr"
+
+# Terminal 2 — Web
+cd web && npm run dev   # OMR Viewer phải hiện "· api"
+```
+
+Sinh lại snapshot tĩnh:
 
 ```bash
 python3 tools/omr_extract.py output/<book>.omr web/public/omr
 ```
-
-Script (stdlib Python) giải nén `.omr`, ghi mỗi sheet ra `sheet-N.png` + `sheet-N.json` (`inters` có bounds theo pixel ảnh, `relations` có source/target/type) + `index.json`. Đổi `BOOK_DIR` trong `src/OmrViewer.tsx` để trỏ sang book khác.
 
 ## Âm thanh (SoundFont)
 

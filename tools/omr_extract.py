@@ -47,6 +47,9 @@ def parse_sheet(xml_bytes: bytes) -> dict:
                     grade = el.get("grade")
                     ctx = el.get("ctx-grade")
                     staff = el.get("staff")
+                    # Capella-like: sentence has TextRole; word/lyric/chord carry OCR value.
+                    role = el.get("role")
+                    value = el.get("value")
                     inters.append(
                         {
                             "id": int(el.get("id")),
@@ -56,6 +59,8 @@ def parse_sheet(xml_bytes: bytes) -> dict:
                             "ctxGrade": float(ctx) if ctx else None,
                             "staff": int(staff) if staff else None,
                             "system": system_id,
+                            "role": role,
+                            "value": value,
                             "x": int(bounds.get("x")),
                             "y": int(bounds.get("y")),
                             "w": int(bounds.get("w")),
