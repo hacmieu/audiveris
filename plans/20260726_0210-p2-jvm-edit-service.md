@@ -1,7 +1,8 @@
 # Kế hoạch P2 — JVM service đọc Book (+ bàn giao)
 
-**Trạng thái**: ⬜ CHƯA BẮT ĐẦU
-**Thời điểm**: 2026-07-26 02:10
+**Trạng thái**: ✅ XONG (thực tế dùng RunClass+HttpServer, không Javalin)  
+**Báo cáo**: [../reports/20260726_0221-p2-omr-api-va-lop-capella.md](../reports/20260726_0221-p2-omr-api-va-lop-capella.md)  
+**Thời điểm**: 2026-07-26 02:10 → hoàn thành 02:21
 **Tiền đề**: [P1 đã xong](../reports/20260726_0210-p1-omr-overlay-viewer.md) · [kế hoạch tổng 7 phase](20260726_0156-port-gui-web.md)
 
 ---
