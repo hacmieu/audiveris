@@ -6,7 +6,8 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 
 | Ngày giờ | Báo cáo | Tóm tắt |
 |---|---|---|
-| 2026-07-26 01:30 | [**✅ Tab + SoundFont HQ**](20260726_0130-tab-va-soundfont-hq.md) | **MỚI NHẤT.** Nút Tab (EADGBE ước lượng). Âm thanh nâng cấp MuseScore General. |
+| 2026-07-26 01:39 | *(xem memory)* [Fix Play — vòng lặp SoundFont](../memory/20260726_0139-fix-play-soundfont-loop.md) | **MỚI NHẤT.** Play chết do reload MuseScore SF sau mỗi `playerReady` → đã sửa, xác minh ⏸ + cursor chạy. |
+| 2026-07-26 01:30 | [**✅ Tab + SoundFont HQ**](20260726_0130-tab-va-soundfont-hq.md) | Nút Tab (EADGBE ước lượng). Âm thanh nâng cấp MuseScore General. |
 | 2026-07-26 01:16 | [**✅ Triển khai alphaTab player**](20260726_0116-trien-khai-alphatab-player.md) | `web/` Vite+React; play Yêu Xa đã xác minh trên browser. |
 | 2026-07-26 01:03 | [🎸 Khảo sát FE kiểu Guitar Pro](20260726_0103-khao-sat-fe-kieu-guitar-pro.md) | So sánh alphaTab / Soundslice / OSMD / Flat → **chốt alphaTab**. |
 | 2026-07-26 00:50 | [**✅ Nghe thử audio Yêu Xa**](20260726_0050-nghe-thu-audio-yeu-xa.md) | `.mxl` → MIDI → WAV 63s → `afplay`. |
