@@ -6,7 +6,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 | Ngày giờ | Kế hoạch | Trạng thái | Tóm tắt |
 |---|---|---|---|
-| 2026-07-26 01:48 | [**GUI + tích hợp web**](20260726_0148-gui-va-tich-hop-web.md) | 🟢 ĐANG CHẠY | GUI đã mở trên `.omr`. Chốt: GUI sửa / web nghe — không nhúng Swing. |
+| 2026-07-26 01:56 | [**Port GUI → Web (PDCA)**](20260726_0156-port-gui-web.md) | 🟡 PLAN xong, chờ duyệt P1 | Chốt chiến lược A (web mỏng + JVM edit-service). 7 phase PDCA. P1 = overlay read-only. |
+| 2026-07-26 01:48 | [GUI + tích hợp web](20260726_0148-gui-va-tich-hop-web.md) | 🟢 ĐANG CHẠY | GUI đã mở trên `.omr`. Chốt: GUI sửa / web nghe — không nhúng Swing. |
 | 2026-07-26 01:03 | [FE kiểu Guitar Pro — alphaTab](20260726_0103-fe-kieu-guitar-pro-alphatab.md) | 🟢 SPIKE 1–3 **XONG** | Player `web/` đã chạy. Editor đầy đủ = sau MVP. |
 | 2026-07-26 00:35 | [Bootstrap Audiveris + thử PDF Yêu Xa](20260726_0035-bootstrap-va-thu-pdf-yeu-xa.md) | ✅ **XONG** | Fork + JDK 25 + batch OMR PDF Drive đã hoàn tất. |
 

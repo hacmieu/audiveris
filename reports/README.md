@@ -6,7 +6,8 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 
 | Ngày giờ | Báo cáo | Tóm tắt |
 |---|---|---|
-| 2026-07-26 01:48 | [**GUI + tích hợp web**](20260726_0148-gui-va-tich-hop-web.md) | **MỚI NHẤT.** Đã launch Audiveris GUI. Tích hợp với alphaTab = chia vai trò qua `.mxl`, không nhúng GUI vào browser. |
+| 2026-07-26 01:56 | [**Khả thi Port GUI → Web**](20260726_0156-port-gui-web.md) | **MỚI NHẤT.** ~289 file Swing, không REST → không compile/không rewrite JS. Chọn A: web mỏng + JVM service tái dùng model. Bằng chứng `.omr`/Inter/bounds. |
+| 2026-07-26 01:48 | [GUI + tích hợp web](20260726_0148-gui-va-tich-hop-web.md) | Đã launch Audiveris GUI. Tích hợp với alphaTab = chia vai trò qua `.mxl`, không nhúng GUI vào browser. |
 | 2026-07-26 01:39 | *(xem memory)* [Fix Play — vòng lặp SoundFont](../memory/20260726_0139-fix-play-soundfont-loop.md) | Play chết do reload MuseScore SF sau mỗi `playerReady` → đã sửa. |
 | 2026-07-26 01:30 | [**✅ Tab + SoundFont HQ**](20260726_0130-tab-va-soundfont-hq.md) | Nút Tab (EADGBE ước lượng). Âm thanh nâng cấp MuseScore General. |
 | 2026-07-26 01:16 | [**✅ Triển khai alphaTab player**](20260726_0116-trien-khai-alphatab-player.md) | `web/` Vite+React; play Yêu Xa đã xác minh trên browser. |
