@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 01:39 | [**Fix Play — vòng lặp SoundFont**](20260726_0139-fix-play-soundfont-loop.md) | **MỚI NHẤT.** Nạp SF sau playerReady gây loop; chọn SF một lần lúc init. Play OK. |
+| 2026-07-26 01:48 | [**GUI + tích hợp web**](20260726_0148-gui-va-tich-hop-web.md) | **MỚI NHẤT.** Đã mở Audiveris GUI trên `.omr` Yêu Xa. Tích hợp = chia vai trò (GUI sửa / web nghe), không nhúng Swing vào browser. |
+| 2026-07-26 01:39 | [Fix Play — vòng lặp SoundFont](20260726_0139-fix-play-soundfont-loop.md) | Nạp SF sau playerReady gây loop; chọn SF một lần lúc init. Play OK. |
 | 2026-07-26 01:30 | [**Tab + SoundFont HQ**](20260726_0130-tab-va-soundfont-hq.md) |  Nút Tab (tuning EADGBE ước lượng từ MIDI). Âm thanh: MuseScore General.sf3 nếu có, không thì sonivox. |
 | 2026-07-26 01:16 | [alphaTab player đã triển khai](20260726_0116-alphatab-player-da-trien-khai.md) | `web/` Vite+React+alphaTab; play Yêu Xa OK. `cd web && npm run dev` → :5173 |
 | 2026-07-26 01:03 | [Quyết định FE = alphaTab](20260726_0103-quyet-dinh-fe-alphatab.md) | FE kiểu Guitar Pro → chốt **alphaTab** (OSS). Soundslice = SaaS dự phòng. OSMD không đủ. |
@@ -38,9 +39,12 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 - Chuỗi: `.mxl` → `music21` → `.mid` → `fluidsynth` + `~/Library/Audio/Sounds/Banks/MuseScore_General.sf3` → `.wav` → `afplay`.
 - Đã phát thành công 63s ([báo cáo](../reports/20260726_0050-nghe-thu-audio-yeu-xa.md)).
 
+**Audiveris GUI (sửa OMR)**
+- Mở: `./gradlew :app:run -PcmdLineArgs="/ABS/output/yeu-xa-sheet-nhac.omr"` (không `-batch`).
+- Vai trò: sửa Inter/Relation, re-run step, export `.mxl`.
+- **Không** nhúng vào web — tích hợp qua file `.omr`/`.mxl` ([báo cáo](../reports/20260726_0148-gui-va-tich-hop-web.md)).
+
 **FE player (kiểu Guitar Pro)** 🎸
-- **Stack**: `web/` = Vite + React + `@coderline/alphatab` + `@coderline/alphatab-vite`.
+- **Stack**: `web/` = Vite + React + `@coderline/alphatab`.
 - **Chạy**: `cd web && npm run dev` → http://localhost:5173/
-- **Tab**: nút Tab — tự sinh tablature guitar chuẩn từ pitch (OMR không có fret).
-- **SoundFont**: `sonivox` mặc định; HQ = `MuseScore_General.sf3` (tải 1 lần, xem `web/README.md`).
-- Chi tiết: [reports/20260726_0130-tab-va-soundfont-hq.md](../reports/20260726_0130-tab-va-soundfont-hq.md)
+- **Tab** / **SoundFont HQ**: xem [reports/20260726_0130-…](../reports/20260726_0130-tab-va-soundfont-hq.md).
