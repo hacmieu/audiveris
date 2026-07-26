@@ -12,6 +12,13 @@ import {
   synth,
   type json,
 } from '@coderline/alphatab'
+import {
+  FolderOpenIcon,
+  MusicNotesIcon,
+  PauseIcon,
+  PlayIcon,
+  StopIcon,
+} from '@phosphor-icons/react'
 import OmrViewer from './OmrViewer'
 import Library from './Library'
 import './App.css'
@@ -210,7 +217,7 @@ export default function App() {
     const api = apiRef.current
     if (!api) return
     if (!api.isReadyForPlayback) {
-      setError('Player chưa sẵn sàng — đợi SoundFont nạp xong rồi thử lại')
+      setError('Player chưa sẵn sàng, đợi SoundFont nạp xong rồi thử lại')
       return
     }
     api.playPause()
@@ -358,10 +365,12 @@ export default function App() {
     <div className="app" ref={wrapRef}>
       <header className="topbar">
         <div className="brand">
-          <span className="brand-mark">♪</span>
+          <span className="brand-mark">
+            <MusicNotesIcon size={18} weight="fill" />
+          </span>
           <div>
             <h1>Audiveris Player</h1>
-            <p>alphaTab · kiểu Guitar Pro</p>
+            <p>Đọc, sửa và nghe bản nhạc đã quét</p>
           </div>
         </div>
         <nav className="modes">
@@ -399,7 +408,8 @@ export default function App() {
                 className="primary"
                 onClick={() => fileInputRef.current?.click()}
               >
-                Mở file…
+                <FolderOpenIcon size={16} weight="bold" />
+                Mở file
               </button>
               <input
                 ref={fileInputRef}
@@ -464,17 +474,20 @@ export default function App() {
             })}
           </ul>
           <p className="hint">
-            Chọn bài từ tab <strong>Thư viện</strong> hoặc "Mở file…". Nguồn mặc
-            định: <code>yeu-xa-sheet-nhac.mxl</code> (Audiveris). Hỗ trợ thêm Guitar
-            Pro.
+            Chọn bài từ tab <strong>Thư viện</strong> hoặc mở file rời. Ngoài
+            MusicXML của Audiveris, player đọc được cả file Guitar Pro.
           </p>
-          <p className="license">
-            Powered by{' '}
-            <a href="https://alphatab.net/" target="_blank" rel="noreferrer">
-              alphaTab
-            </a>{' '}
-            (MPL-2.0)
-          </p>
+          <dl className="engine">
+            <dt>Bộ tiếng</dt>
+            <dd>{soundFontName || 'đang nạp'}</dd>
+            <dt>Engine</dt>
+            <dd>
+              <a href="https://alphatab.net/" target="_blank" rel="noreferrer">
+                alphaTab
+              </a>{' '}
+              (MPL-2.0)
+            </dd>
+          </dl>
         </aside>
 
         <section className="sheet">
@@ -489,9 +502,16 @@ export default function App() {
                 ) : (
                   <>
                     <strong>
-                      {rendering ? 'Đang render bản nhạc…' : 'Đang nạp SoundFont…'}
+                      {rendering ? 'Đang dựng bản nhạc' : 'Đang nạp bộ tiếng'}
                     </strong>
-                    <p>{sfProgress < 100 ? `SoundFont ${sfProgress}%` : 'Sẵn sàng sắp xong'}</p>
+                    <p>
+                      {sfProgress < 100
+                        ? `Bộ tiếng ${sfProgress}%`
+                        : 'Sắp xong'}
+                    </p>
+                    <div className="overlay-bar">
+                      <i style={{ width: `${sfProgress}%` }} />
+                    </div>
                   </>
                 )}
               </div>
@@ -505,25 +525,34 @@ export default function App() {
 
       <footer className="transport" hidden={mode !== 'player'}>
         <div className="transport-left">
-          <button type="button" className="icon" disabled={!ready} onClick={stop} title="Stop">
-            ⏹
+          <button
+            type="button"
+            className="icon"
+            disabled={!ready}
+            onClick={stop}
+            title="Dừng"
+            aria-label="Dừng"
+          >
+            <StopIcon size={16} weight="fill" />
           </button>
           <button
             type="button"
             className="icon play"
             disabled={!ready}
             onClick={playPause}
-            title="Play / Pause"
+            title={playing ? 'Tạm dừng' : 'Phát'}
+            aria-label={playing ? 'Tạm dừng' : 'Phát'}
           >
-            {playing ? '⏸' : '▶'}
+            {playing ? (
+              <PauseIcon size={20} weight="fill" />
+            ) : (
+              <PlayIcon size={20} weight="fill" />
+            )}
           </button>
           <div className="meta">
             <strong>{title}</strong>
-            <span>{artist || '—'}</span>
-            <span className="time">
-              {position}
-              {soundFontName ? ` · ${soundFontName}` : ''}
-            </span>
+            <span>{artist || '-'}</span>
+            <span className="time">{position}</span>
           </div>
         </div>
 
@@ -539,7 +568,7 @@ export default function App() {
               disabled={!ready}
               onChange={(e) => onSpeedChange(Number(e.target.value) / 100)}
             />
-            <span>{Math.round(speed * 100)}%</span>
+            <output>{Math.round(speed * 100)}%</output>
           </label>
           <button
             type="button"

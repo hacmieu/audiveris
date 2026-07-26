@@ -6,7 +6,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 | Ngày giờ | Kế hoạch | Trạng thái | Tóm tắt |
 |---|---|---|---|
-| 2026-07-26 23:41 | [**Book picker ≠ select 20k**](20260726_2341-book-picker-20k.md) | ✅ **XONG** | **MỚI NHẤT.** Typeahead + API limit. Report: [../reports/20260726_2345-…](../reports/20260726_2345-book-picker-20k.md). |
+| 2026-07-27 00:05 | [**Audit + optimize giao diện**](20260727_0005-audit-optimize-giao-dien.md) | ✅ **XONG** | **MỚI NHẤT.** Redesign-Preserve theo lever 1-4. Report: [../reports/20260727_0010-…](../reports/20260727_0010-audit-optimize-giao-dien.md). |
+| 2026-07-26 23:41 | [Book picker ≠ select 20k](20260726_2341-book-picker-20k.md) | ✅ **XONG** | Typeahead + API limit. Report: [../reports/20260726_2345-…](../reports/20260726_2345-book-picker-20k.md). |
 | 2026-07-26 23:08 | [OMR Viewer multi-book](20260726_2308-omr-viewer-multi-book.md) | ✅ **XONG** | Đổi `.omr` khi API đang chạy; Sửa OMR từ Thư viện. Report: [../reports/20260726_2308-…](../reports/20260726_2308-omr-viewer-multi-book.md). |
 | 2026-07-26 22:26 | [Library ~20k bản nhạc (PDCA)](20260726_2226-library-20k.md) | ✅ **MVP XONG** | SQLite catalog + `tools/library.py` + tab Thư viện. Scale: song song + installDist + FTS5. Report: [../reports/20260726_2235-…](../reports/20260726_2235-library-20k-mvp.md). |
 | 2026-07-26 06:19 | [P6 — Thêm Inter (palette + click)](20260726_0619-p6-them-inter.md) | ✅ **XONG** | `POST /inter`+`AdditionTask`; palette "+ Thêm". Report: [../reports/20260726_0619-…](../reports/20260726_0619-p6-them-inter.md). |
@@ -43,7 +44,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 ## Việc tiếp theo
 
-1. **Library scale**: ingest 20k PDF thật → chạy `process` song song 4–6 worker; `installDist` bỏ overhead Gradle; OCR title từ `.omr`; FTS5 lời nhạc ([report](../reports/20260726_2235-library-20k-mvp.md)).
+0. **Dark mode** (chờ xác nhận): token `--deck*` đã sẵn, chỉ cần thêm một khối `prefers-color-scheme: dark` ([plan](20260727_0005-audit-optimize-giao-dien.md)).
+1. **Library scale**: ingest 20k PDF thật → chạy `process` song song 4–6 worker; `installDist` bỏ overhead Gradle; OCR title từ `.omr`; FTS5 lời nhạc ([report](../reports/20260726_2235-library-20k-mvp.md)). Kèm virtualise `<tbody>` bảng Thư viện.
 2. **P5** — export `.mxl` sau khi sửa → nạp lại alphaTab để nghe (giá trị cao vì đã có thêm/xóa/sửa).
 3. **P4** — relation link/unlink + convert Lyrics đầy đủ ([kế hoạch](20260726_0228-p4-relation-va-role-sau.md)).
 4. **P6b** — thêm text/lyrics (OCR glyph) + snap cao độ khi đặt nốt; **P7** — re-run step.

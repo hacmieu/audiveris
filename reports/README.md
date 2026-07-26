@@ -6,7 +6,8 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 
 | Ngày giờ | Báo cáo | Tóm tắt |
 |---|---|---|
-| 2026-07-26 23:45 | [**✅ Book picker 20k (no select dump)**](20260726_2345-book-picker-20k.md) | **MỚI NHẤT.** Typeahead thay `<select>`; `GET /api/books?q=&limit=`. Tư duy SOLID/DRY/KISS/DevOps. |
+| 2026-07-27 00:10 | [**✅ Audit + optimize giao diện**](20260727_0010-audit-optimize-giao-dien.md) | **MỚI NHẤT.** 11 lỗi có bằng chứng → sửa. Bỏ Fraunces+beige (skill cấm), Geist self-host, xám achromatic, shape lock, `:focus-visible`, Phosphor icon, disabled 4.2→**5.36:1**. |
+| 2026-07-26 23:45 | [✅ Book picker 20k (no select dump)](20260726_2345-book-picker-20k.md) | Typeahead thay `<select>`; `GET /api/books?q=&limit=`. Tư duy SOLID/DRY/KISS/DevOps. |
 | 2026-07-26 23:08 | [✅ OMR Viewer multi-book](20260726_2308-omr-viewer-multi-book.md) | `GET /api/books` + `POST /api/book/open`; Thư viện → Sửa OMR; đổi Yêu Em (614) ↔ Yêu Xa (856) OK. |
 | 2026-07-26 22:52 | [✅ Gom movement (indentations)](20260726_2252-gom-movement-indentation.md) | Vì sao bài bị tách 5 phần + cách tắt `indentations` để ra 1 FULL. Key đúng KHÔNG có `$Constants`. |
 | 2026-07-26 22:35 | [✅ Library MVP (hướng 20k)](20260726_2235-library-20k-mvp.md) | SQLite catalog + CLI pipeline + tab Thư viện; fix crash `beats`. Browser test 4/4 PASS. Kèm lộ trình scale 20k. |

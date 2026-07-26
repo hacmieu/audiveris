@@ -7,7 +7,8 @@
 }
 
 .book-picker-label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
 }
 
 .book-picker-current {
@@ -16,24 +17,25 @@
   gap: 0.4rem;
   max-width: 240px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--r-control);
   padding: 0.25rem 0.55rem;
-  background: white;
+  background: var(--surface-raised);
   color: var(--ink);
   text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .book-picker-current strong {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 600;
-  font-size: 0.85rem;
+  font-weight: 550;
+  font-size: 0.8rem;
 }
 
 .book-picker-chevron {
-  color: var(--ink-muted);
-  font-size: 0.7rem;
+  flex: none;
+  color: var(--ink-faint);
 }
 
 .book-picker-current:hover:not(:disabled) {
@@ -47,9 +49,9 @@
   left: 0;
   z-index: 40;
   width: min(360px, 90vw);
-  background: white;
+  background: var(--surface-raised);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--r-panel);
   box-shadow: var(--shadow);
   padding: 0.5rem;
 }
@@ -57,16 +59,21 @@
 .book-picker-panel input[type='search'] {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--r-control);
   padding: 0.4rem 0.55rem;
   font-size: 0.85rem;
+  background: var(--surface-raised);
   color: var(--ink);
 }
 
+.book-picker-panel input[type='search']::placeholder {
+  color: var(--ink-faint);
+}
+
 .book-picker-meta {
-  margin: 0.35rem 0.15rem;
+  margin: 0.4rem 0.15rem;
   font-size: 0.72rem;
-  color: var(--ink-muted);
+  color: var(--ink-faint);
 }
 
 .book-picker-hits {
@@ -86,31 +93,29 @@
   border: 0;
   background: transparent;
   padding: 0.4rem 0.5rem;
-  border-radius: 6px;
+  border-radius: var(--r-control);
   text-align: left;
   color: var(--ink);
 }
 
-.book-picker-hits button:hover:not(:disabled) {
-  background: var(--accent-soft);
-}
-
+.book-picker-hits button:hover:not(:disabled),
 .book-picker-hits button.active {
   background: var(--accent-soft);
 }
 
 .book-picker-hits button strong {
   font-size: 0.85rem;
+  font-weight: 550;
 }
 
 .book-picker-hits button span {
   font-size: 0.72rem;
-  color: var(--ink-muted);
-  font-family: ui-monospace, monospace;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
 }
 
 .book-picker-empty {
   padding: 0.6rem 0.5rem;
-  color: var(--ink-muted);
+  color: var(--ink-faint);
   font-size: 0.8rem;
 }

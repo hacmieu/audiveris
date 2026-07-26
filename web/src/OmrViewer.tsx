@@ -155,7 +155,7 @@ async function loadSheet(sheetNum: number): Promise<SheetData> {
   const r = await fetch(`${STATIC_DIR}/${STATIC_FILE}`)
   if (!r.ok) {
     throw new Error(
-      `HTTP ${r.status} — chạy tools/omr_extract.py hoặc start OmrApiServer`,
+      `HTTP ${r.status}. Chạy tools/omr_extract.py hoặc start OmrApiServer`,
     )
   }
   const d = (await r.json()) as SheetData
@@ -310,7 +310,7 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
       if (source !== 'api') {
         setEdit((e) => ({
           ...e,
-          message: 'Cần OmrApiServer (P2) để sửa — đang dùng snapshot tĩnh',
+          message: 'Cần OmrApiServer (P2) để sửa, đang dùng snapshot tĩnh',
         }))
         return
       }
@@ -561,6 +561,7 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
   return (
     <div className="omr">
       <div className="omr-toolbar">
+        <div className="omr-row">
         {source === 'api' && (
           <BookPicker
             currentSlug={currentSlug}
@@ -604,6 +605,45 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
           </button>
         </div>
 
+        {source === 'api' && (
+          <div className="omr-edit">
+            <label className="omr-select omr-add">
+              Thêm
+              <select
+                value={addShape}
+                onChange={(e) => setAddShape(e.target.value)}
+              >
+                <option value="">tắt</option>
+                {ADD_SHAPES.map(({ group, shapes }) => (
+                  <optgroup key={group} label={group}>
+                    {shapes.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </label>
+            <button type="button" disabled={busy || !edit.canUndo} onClick={undo}>
+              Undo
+            </button>
+            <button type="button" disabled={busy || !edit.canRedo} onClick={redo}>
+              Redo
+            </button>
+            <button
+              type="button"
+              className="omr-save"
+              disabled={busy || !edit.dirty}
+              onClick={save}
+            >
+              Lưu .omr
+            </button>
+          </div>
+        )}
+        </div>
+
+        <div className="omr-row">
         <label className="omr-check">
           <input
             type="checkbox"
@@ -661,47 +701,17 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
         </div>
 
         <div className="omr-count">
-          {visible.length} hiển thị · {data.relations.length} relation
-          {source ? ` · ${source}` : ''}
-          {edit.dirty ? ' · dirty' : ''}
+          <span>{visible.length} inter</span>
+          <span>{data.relations.length} relation</span>
+          {source && <span>{source}</span>}
+          {edit.dirty && <span className="omr-dirty">chưa lưu</span>}
         </div>
-
-        {source === 'api' && (
-          <label className="omr-select omr-add">
-            + Thêm
-            <select value={addShape} onChange={(e) => setAddShape(e.target.value)}>
-              <option value="">— tắt —</option>
-              {ADD_SHAPES.map(({ group, shapes }) => (
-                <optgroup key={group} label={group}>
-                  {shapes.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </label>
-        )}
-
-        {source === 'api' && (
-          <div className="omr-edit">
-            <button type="button" disabled={busy || !edit.canUndo} onClick={undo}>
-              Undo
-            </button>
-            <button type="button" disabled={busy || !edit.canRedo} onClick={redo}>
-              Redo
-            </button>
-            <button type="button" disabled={busy || !edit.dirty} onClick={save}>
-              Save .omr
-            </button>
-          </div>
-        )}
+        </div>
       </div>
       {addShape && (
         <div className="omr-toast omr-adding-hint">
           Chế độ thêm: bấm lên bản nhạc để đặt <strong>{addShape}</strong> (auto gắn staff gần
-          nhất). Chọn “— tắt —” để thoát.
+          nhất). Chọn “tắt” để thoát.
         </div>
       )}
       {edit.message && <div className="omr-toast">{edit.message}</div>}
@@ -736,7 +746,7 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
                   }}
                   title={`${inter.type}${inter.role ? ` [${inter.role}]` : ''} ${
                     inter.value ?? inter.shape ?? ''
-                  } · grade ${inter.grade ?? '—'}`}
+                  } · grade ${inter.grade ?? '-'}`}
                   onClick={() => setSelectedId(inter.id)}
                 />
               ))}
@@ -789,16 +799,16 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
                   </>
                 )}
                 <dt>Shape</dt>
-                <dd>{selected.shape ?? '—'}</dd>
+                <dd>{selected.shape ?? '-'}</dd>
                 <dt>Grade</dt>
                 <dd className={gradeClass(selected.grade)}>
-                  {selected.grade?.toFixed(2) ?? '—'}
+                  {selected.grade?.toFixed(2) ?? '-'}
                 </dd>
                 <dt>Ctx-grade</dt>
-                <dd>{selected.ctxGrade?.toFixed(2) ?? '—'}</dd>
+                <dd>{selected.ctxGrade?.toFixed(2) ?? '-'}</dd>
                 <dt>System / Staff</dt>
                 <dd>
-                  {selected.system} / {selected.staff ?? '—'}
+                  {selected.system} / {selected.staff ?? '-'}
                 </dd>
                 <dt>Bounds</dt>
                 <dd>

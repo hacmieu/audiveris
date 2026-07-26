@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 23:45 | [**Book picker 20k**](20260726_2345-book-picker-20k.md) | **MỚI NHẤT.** `<select>` 20k = không; typeahead + `GET /api/books?q=&limit=`. SOLID/DRY/KISS/DevOps. |
+| 2026-07-27 00:10 | [**Design system giao diện web**](20260727_0010-design-system-giao-dien.md) | **MỚI NHẤT.** Token mới: Geist self-host, xám achromatic, shape lock 4 bán kính, `--deck*`. Bỏ Fraunces + palette beige. |
+| 2026-07-26 23:45 | [Book picker 20k](20260726_2345-book-picker-20k.md) | `<select>` 20k = không; typeahead + `GET /api/books?q=&limit=`. SOLID/DRY/KISS/DevOps. |
 | 2026-07-26 23:08 | [OMR multi-book](20260726_2308-omr-viewer-multi-book.md) | OMR Viewer đổi bài qua catalog (`/api/books` + `book/open`). Thư viện có nút Sửa OMR. |
 | 2026-07-26 22:52 | [Gom movement (indentations)](../reports/20260726_2252-gom-movement-indentation.md) | Bài bị tách 5 phần do công tắc `indentations`. Tắt → 1 FULL. `library.py` bật mặc định off. |
 | 2026-07-26 22:35 | [Library MVP xong](20260726_2235-library-20k-xong.md) | Catalog SQLite + `tools/library.py` + tab Thư viện trên web (hướng 20k bản). Fix crash `beats` (mxl gộp music21). |
@@ -58,6 +59,16 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 - **Tab** / **SoundFont HQ**: xem [reports/20260726_0130-…](../reports/20260726_0130-tab-va-soundfont-hq.md).
 - 3 chế độ: **Player** (phát) · **OMR Viewer** (xem/sửa nhận dạng) · **Thư viện** (catalog).
 - ⚠️ **Không** gộp `.mxl` bằng music21 để phát trên alphaTab (crash `beats`) — dùng export chuẩn Audiveris.
+
+**Design system giao diện** 🎨
+- Token duy nhất ở `web/src/index.css`. **Sửa màu/bán kính/chữ chỉ ở đó**, không hardcode trong component CSS.
+- Chữ: **Geist** + **Geist Mono** self-host (`@fontsource-variable/*`). Không dùng serif, không dùng `<link>` Google Fonts.
+- Màu: thang xám **achromatic** (nền quanh bản scan không được ám màu) + 1 accent teal `#0f766e`.
+  Bản nhạc `--score` là bề mặt sáng nhất. Thang grade xanh/hổ phách/đỏ = mã hóa dữ liệu, không phải trang trí.
+- Shape lock: `--r-pill` toggle/badge · `--r-control` 8px control · `--r-panel` 12px panel · `--r-overlay` 2px khung trên bản nhạc.
+- Icon: **chỉ** `@phosphor-icons/react`. Không emoji, không tự vẽ SVG.
+- Motion: chỉ `:active` phản hồi bấm, luôn bọc `prefers-reduced-motion`.
+- Chi tiết + số đo tương phản: [reports/20260727_0010-…](../reports/20260727_0010-audit-optimize-giao-dien.md).
 
 **Thư viện bản nhạc (hướng ~20k)** 📚
 - Catalog: `library/catalog.db` (SQLite) · PDF `library/pdfs/` · artifacts `library/works/<slug>/`.

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { PlayIcon } from '@phosphor-icons/react'
 import './Library.css'
 
 interface LibraryPart {
@@ -118,7 +119,7 @@ export default function Library({ onOpen, onEditOmr }: Props) {
             {visible.map((s) => (
               <tr key={s.slug}>
                 <td>
-                  <strong>{s.title}</strong>
+                  <div className="lib-title">{s.title}</div>
                   <div className="lib-slug">{s.slug}</div>
                 </td>
                 <td>
@@ -126,7 +127,7 @@ export default function Library({ onOpen, onEditOmr }: Props) {
                     {STATUS_LABEL[s.status] ?? s.status}
                   </span>
                 </td>
-                <td>{s.pages ?? '—'}</td>
+                <td className="lib-pages">{s.pages ?? '-'}</td>
                 <td>
                   <div className="lib-parts">
                     {s.parts.map((p) => (
@@ -140,7 +141,8 @@ export default function Library({ onOpen, onEditOmr }: Props) {
                           )
                         }
                       >
-                        ▶ {p.name}
+                        <PlayIcon size={12} weight="fill" />
+                        {p.name}
                       </button>
                     ))}
                     {s.parts.length === 0 && <em>chưa có MusicXML</em>}
@@ -156,7 +158,7 @@ export default function Library({ onOpen, onEditOmr }: Props) {
                       Sửa OMR
                     </button>
                   ) : (
-                    <em className="lib-none-inline">—</em>
+                    <em className="lib-none-inline">-</em>
                   )}
                 </td>
               </tr>

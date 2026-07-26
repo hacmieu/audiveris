@@ -1,20 +1,61 @@
 :root {
-  --ink: #1c1917;
-  --ink-muted: #57534e;
-  --paper: #f5f0e8;
-  --paper-deep: #ebe4d8;
-  --panel: #faf8f5;
-  --line: #d6cfc3;
+  color-scheme: light;
+
+  /* Surfaces are achromatic on purpose: this UI frames scanned sheet music,
+     and a tinted chrome biases how the scan's own paper colour reads. */
+  --surface: #e4e4e7;
+  --surface-panel: #fafafa;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f4f4f5;
+  /* The score is a document, not a UI surface, so it stays true white and
+     ends up the brightest thing on screen. */
+  --score: #ffffff;
+
+  --ink: #18181b;
+  --ink-muted: #52525b;
+  --ink-faint: #71717a;
+
+  --line: #d4d4d8;
+  --line-strong: #a1a1aa;
+
   --accent: #0f766e;
   --accent-hover: #0d9488;
   --accent-soft: rgba(15, 118, 110, 0.12);
-  --danger: #b45309;
-  --shadow: 0 12px 40px rgba(28, 25, 23, 0.08);
-  --radius: 12px;
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-ui: 'Source Sans 3', system-ui, sans-serif;
+
+  /* Playback deck: the one dark band, anchored at the bottom edge. */
+  --deck: #18181b;
+  --deck-raised: #27272a;
+  --deck-line: #3f3f46;
+  --deck-ink: #fafafa;
+  --deck-ink-muted: #a1a1aa;
+
+  /* OMR confidence scale. This is data encoding, not decoration, so it is
+     allowed alongside the single UI accent. */
+  --grade-high: #15803d;
+  --grade-high-line: #16a34a;
+  --grade-mid: #b45309;
+  --grade-mid-line: #d97706;
+  --grade-low: #b91c1c;
+  --grade-low-line: #dc2626;
+  --warn-surface: #fef3c7;
+  --warn-line: #fcd34d;
+
+  /* Shape lock: pills for toggles and badges, 8px for controls, 12px for
+     panels. Overlays drawn on the score keep 2px so they do not round off
+     the glyph they outline. */
+  --r-pill: 999px;
+  --r-control: 8px;
+  --r-panel: 12px;
+  --r-overlay: 2px;
+
+  --shadow: 0 12px 40px rgba(24, 24, 27, 0.1);
+  --focus-ring: var(--accent);
+
+  --font-ui: 'Geist Variable', system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
   color: var(--ink);
-  background: var(--paper);
+  background: var(--surface-sunken);
   font-family: var(--font-ui);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -33,13 +74,6 @@ body,
   height: 100%;
 }
 
-body {
-  background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(15, 118, 110, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(180, 83, 9, 0.08), transparent),
-    var(--paper);
-}
-
 button,
 input,
 select {
@@ -48,4 +82,9 @@ select {
 
 button {
   cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }

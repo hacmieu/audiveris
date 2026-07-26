@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { CaretDownIcon } from '@phosphor-icons/react'
 import './BookPicker.css'
 
 export interface BookHit {
@@ -82,8 +83,8 @@ export default function BookPicker({ currentSlug, disabled, onOpen }: Props) {
           if (!open) void search(q)
         }}
       >
-        <strong>{currentTitle || '— chọn bài —'}</strong>
-        <span className="book-picker-chevron">▾</span>
+        <strong>{currentTitle || 'Chọn bài'}</strong>
+        <CaretDownIcon className="book-picker-chevron" size={12} weight="bold" />
       </button>
 
       {open && (

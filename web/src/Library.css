@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  background: var(--surface-sunken);
 }
 
 .lib-empty {
@@ -16,9 +17,12 @@
 .lib-empty pre {
   margin-top: 0.75rem;
   padding: 0.6rem 0.8rem;
-  background: var(--paper-deep);
-  border-radius: 8px;
-  font-size: 0.78rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-align: left;
 }
 
 .lib-toolbar {
@@ -27,84 +31,102 @@
   gap: 1rem;
   padding: 0.6rem 1.25rem;
   border-bottom: 1px solid var(--line);
-  background: var(--panel);
+  background: var(--surface-panel);
 }
 
 .lib-toolbar input[type='search'] {
   flex: 0 1 320px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--r-control);
   padding: 0.4rem 0.7rem;
-  background: white;
+  background: var(--surface-raised);
   color: var(--ink);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+}
+
+.lib-toolbar input[type='search']::placeholder {
+  color: var(--ink-faint);
 }
 
 .lib-count {
-  color: var(--ink-muted);
-  font-size: 0.82rem;
+  color: var(--ink-faint);
+  font-size: 0.8rem;
 }
 
 .lib-body {
   flex: 1;
   overflow: auto;
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.25rem 2rem;
 }
 
 .lib-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 .lib-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   text-align: left;
-  color: var(--ink-muted);
+  color: var(--ink-faint);
   font-weight: 600;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 0.45rem 0.6rem;
-  border-bottom: 2px solid var(--line);
+  letter-spacing: 0.06em;
+  padding: 0.4rem 0.6rem;
+  background: var(--surface-sunken);
+  border-bottom: 1px solid var(--line);
 }
 
+/* One hairline per row, no top border: two borders per row reads as a grid. */
 .lib-table td {
   padding: 0.55rem 0.6rem;
   border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
 
+.lib-table tbody tr:hover td {
+  background: var(--surface-raised);
+}
+
+.lib-title {
+  font-weight: 600;
+}
+
 .lib-slug {
-  color: var(--ink-muted);
-  font-size: 0.75rem;
-  font-family: ui-monospace, monospace;
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
 }
 
 .lib-status {
   display: inline-block;
-  padding: 0.12rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--r-pill);
+  font-size: 0.72rem;
   border: 1px solid var(--line);
   color: var(--ink-muted);
 }
 
 .lib-status.done {
-  border-color: #16a34a;
-  color: #15803d;
-  background: #f0fdf4;
+  border-color: color-mix(in srgb, var(--grade-high) 45%, transparent);
+  color: var(--grade-high);
 }
 
 .lib-status.failed {
-  border-color: #dc2626;
-  color: #b91c1c;
-  background: #fef2f2;
+  border-color: color-mix(in srgb, var(--grade-low) 45%, transparent);
+  color: var(--grade-low);
 }
 
 .lib-status.processing {
-  border-color: #d97706;
-  color: #b45309;
-  background: #fffbeb;
+  border-color: color-mix(in srgb, var(--grade-mid) 45%, transparent);
+  color: var(--grade-mid);
+}
+
+.lib-pages {
+  font-variant-numeric: tabular-nums;
 }
 
 .lib-parts {
@@ -113,45 +135,42 @@
   gap: 0.3rem;
 }
 
-.lib-parts button {
+.lib-parts button,
+.lib-omr {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   border: 1px solid var(--line);
-  background: white;
+  background: var(--surface-raised);
   color: var(--ink);
-  border-radius: 8px;
-  padding: 0.22rem 0.6rem;
+  border-radius: var(--r-control);
+  padding: 0.2rem 0.55rem;
   font-size: 0.8rem;
+  transition: background 0.15s ease, border-color 0.15s ease,
+    transform 0.08s ease;
 }
 
-.lib-parts button:hover {
+.lib-parts button:hover,
+.lib-omr:hover {
   background: var(--accent-soft);
   border-color: var(--accent);
 }
 
-.lib-omr {
-  border: 1px solid var(--accent);
-  background: var(--accent-soft);
-  color: var(--ink);
-  border-radius: 8px;
-  padding: 0.22rem 0.6rem;
-  font-size: 0.8rem;
-}
-
-.lib-omr:hover {
-  background: white;
-}
-
-.lib-none-inline {
-  color: var(--ink-muted);
+.lib-none-inline,
+.lib-parts em {
+  color: var(--ink-faint);
   font-size: 0.8rem;
   font-style: normal;
 }
 
-.lib-parts em {
-  color: var(--ink-muted);
-  font-size: 0.8rem;
-}
-
 .lib-none {
   color: var(--ink-muted);
-  padding: 1rem 0.25rem;
+  padding: 1.5rem 0.25rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lib-parts button:active,
+  .lib-omr:active {
+    transform: translateY(1px);
+  }
 }
