@@ -13,14 +13,16 @@ import {
   type json,
 } from '@coderline/alphatab'
 import OmrViewer from './OmrViewer'
+import Library from './Library'
 import './App.css'
 
-type Mode = 'player' | 'omr'
+type Mode = 'player' | 'omr' | 'library'
 type Score = model.Score
 type Track = model.Track
 const PlayerState = synth.PlayerState
 
-const DEFAULT_SCORE = '/scores/yeu-xa-sheet-nhac.mxl'
+// Audiveris export (music21-merged files crash alphaTab's MusicXML importer).
+const DEFAULT_SCORE = '/library/yeu-xa-sheet-nhac/yeu-xa-sheet-nhac.mxl'
 
 // Better-sounding GM soundfont (gitignored, see README); sonivox ships with alphaTab.
 const SOUNDFONT_HQ = '/soundfont/MuseScore_General.sf3'
@@ -337,6 +339,15 @@ export default function App() {
     apiRef.current?.load(DEFAULT_SCORE)
   }, [])
 
+  const openFromLibrary = useCallback((url: string, _title: string) => {
+    const api = apiRef.current
+    if (!api) return
+    setMode('player')
+    setRendering(true)
+    setError(null)
+    api.load(url)
+  }, [])
+
   return (
     <div className="app" ref={wrapRef}>
       <header className="topbar">
@@ -361,6 +372,13 @@ export default function App() {
             onClick={() => setMode('omr')}
           >
             OMR Viewer
+          </button>
+          <button
+            type="button"
+            className={`chip ${mode === 'library' ? 'active' : ''}`}
+            onClick={() => setMode('library')}
+          >
+            Thư viện
           </button>
         </nav>
 
@@ -390,6 +408,7 @@ export default function App() {
       </header>
 
       {mode === 'omr' && <OmrViewer />}
+      {mode === 'library' && <Library onOpen={openFromLibrary} />}
 
       <div className="stage" hidden={mode !== 'player'}>
         <aside className="sidebar">
@@ -432,8 +451,9 @@ export default function App() {
             })}
           </ul>
           <p className="hint">
-            Nguồn mặc định: MusicXML từ Audiveris (
-            <code>yeu-xa-sheet-nhac.mxl</code>). Hỗ trợ thêm Guitar Pro.
+            Chọn bài từ tab <strong>Thư viện</strong> hoặc "Mở file…". Nguồn mặc
+            định: <code>yeu-xa-sheet-nhac.mxl</code> (Audiveris). Hỗ trợ thêm Guitar
+            Pro.
           </p>
           <p className="license">
             Powered by{' '}

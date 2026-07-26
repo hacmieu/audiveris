@@ -6,7 +6,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 | Ngày giờ | Kế hoạch | Trạng thái | Tóm tắt |
 |---|---|---|---|
-| 2026-07-26 06:19 | [**P6 — Thêm Inter** (palette + click)](20260726_0619-p6-them-inter.md) | ✅ **XONG** | **MỚI NHẤT.** `POST /inter`+`AdditionTask`; palette "+ Thêm". Report: [../reports/20260726_0619-…](../reports/20260726_0619-p6-them-inter.md). |
+| 2026-07-26 22:26 | [**Library ~20k bản nhạc** (PDCA)](20260726_2226-library-20k.md) | ✅ **MVP XONG** | **MỚI NHẤT.** SQLite catalog + `tools/library.py` + tab Thư viện. Scale: song song + installDist + FTS5. Report: [../reports/20260726_2235-…](../reports/20260726_2235-library-20k-mvp.md). |
+| 2026-07-26 06:19 | [P6 — Thêm Inter (palette + click)](20260726_0619-p6-them-inter.md) | ✅ **XONG** | `POST /inter`+`AdditionTask`; palette "+ Thêm". Report: [../reports/20260726_0619-…](../reports/20260726_0619-p6-them-inter.md). |
 | 2026-07-26 02:28 | [P4 — Relation / Lyrics convert + BÀN GIAO](20260726_0228-p4-relation-va-role-sau.md) | ⬜ CHƯA BẮT ĐẦU | Link/unlink hoặc convert Lyrics đầy đủ; hoặc nhảy P5 export. |
 | 2026-07-26 02:21 | [P3 — Sửa Inter](20260726_0221-p3-sua-inter.md) | ✅ **XONG** | Remove + TextRole + undo/redo/save. Report: [../reports/20260726_0228-…](../reports/20260726_0228-p3-sua-inter.md). |
 | 2026-07-26 02:10 | [P2 — JVM edit-service](20260726_0210-p2-jvm-edit-service.md) | ✅ **XONG** | OmrApiServer (RunClass+HttpServer). Report: [../reports/20260726_0221-…](../reports/20260726_0221-p2-omr-api-va-lop-capella.md). |
@@ -40,7 +41,7 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 ## Việc tiếp theo
 
-1. **P5** — export `.mxl` sau khi sửa → nạp lại alphaTab để nghe (giá trị cao vì đã có thêm/xóa/sửa).
-2. **P4** — relation link/unlink + convert Lyrics đầy đủ ([kế hoạch](20260726_0228-p4-relation-va-role-sau.md)).
-3. **P6b** — thêm text/lyrics (OCR glyph) + snap cao độ khi đặt nốt.
-4. **P7** — re-run step sau khi sửa; tiếp tục gán Direction → Lyrics cho lời Việt.
+1. **Library scale**: ingest 20k PDF thật → chạy `process` song song 4–6 worker; `installDist` bỏ overhead Gradle; OCR title từ `.omr`; FTS5 lời nhạc ([report](../reports/20260726_2235-library-20k-mvp.md)).
+2. **P5** — export `.mxl` sau khi sửa → nạp lại alphaTab để nghe (giá trị cao vì đã có thêm/xóa/sửa).
+3. **P4** — relation link/unlink + convert Lyrics đầy đủ ([kế hoạch](20260726_0228-p4-relation-va-role-sau.md)).
+4. **P6b** — thêm text/lyrics (OCR glyph) + snap cao độ khi đặt nốt; **P7** — re-run step.

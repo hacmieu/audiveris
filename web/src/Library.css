@@ -1,0 +1,138 @@
+.lib {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.lib-empty {
+  display: grid;
+  place-items: center;
+  padding: 3rem 1.5rem;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.lib-empty pre {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--paper-deep);
+  border-radius: 8px;
+  font-size: 0.78rem;
+}
+
+.lib-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.lib-toolbar input[type='search'] {
+  flex: 0 1 320px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  background: white;
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+.lib-count {
+  color: var(--ink-muted);
+  font-size: 0.82rem;
+}
+
+.lib-body {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem 1.25rem;
+}
+
+.lib-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.lib-table th {
+  text-align: left;
+  color: var(--ink-muted);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.45rem 0.6rem;
+  border-bottom: 2px solid var(--line);
+}
+
+.lib-table td {
+  padding: 0.55rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.lib-slug {
+  color: var(--ink-muted);
+  font-size: 0.75rem;
+  font-family: ui-monospace, monospace;
+}
+
+.lib-status {
+  display: inline-block;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 1px solid var(--line);
+  color: var(--ink-muted);
+}
+
+.lib-status.done {
+  border-color: #16a34a;
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.lib-status.failed {
+  border-color: #dc2626;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.lib-status.processing {
+  border-color: #d97706;
+  color: #b45309;
+  background: #fffbeb;
+}
+
+.lib-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.lib-parts button {
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.22rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.lib-parts button:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.lib-parts em {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+}
+
+.lib-none {
+  color: var(--ink-muted);
+  padding: 1rem 0.25rem;
+}

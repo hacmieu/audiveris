@@ -6,7 +6,8 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 
 | Ngày giờ | Báo cáo | Tóm tắt |
 |---|---|---|
-| 2026-07-26 06:19 | [**✅ P6 — Thêm Inter qua API**](20260726_0619-p6-them-inter.md) | **MỚI NHẤT.** `POST /inter` + palette "+ Thêm". Check: add NOTEHEAD_BLACK(pitch −2.0)/G_CLEF, shape sai→400, undo về 856, `.omr` nguyên vẹn. |
+| 2026-07-26 22:35 | [**✅ Library MVP (hướng 20k)**](20260726_2235-library-20k-mvp.md) | **MỚI NHẤT.** SQLite catalog + CLI pipeline + tab Thư viện; fix crash `beats`. Browser test 4/4 PASS. Kèm lộ trình scale 20k. |
+| 2026-07-26 06:19 | [✅ P6 — Thêm Inter qua API](20260726_0619-p6-them-inter.md) | `POST /inter` + palette "+ Thêm". Check: add NOTEHEAD_BLACK(pitch −2.0)/G_CLEF, shape sai→400, undo về 856, `.omr` nguyên vẹn. |
 | 2026-07-26 02:28 | [✅ P3 — Sửa Inter qua API](20260726_0228-p3-sua-inter.md) | DELETE inter + POST TextRole + undo/redo/save. Check: xóa NOTEHEAD_BLACK #1269, Ballade→Lyrics, persist trong `.omr`. |
 | 2026-07-26 02:10 | [✅ P1 — OMR Overlay Viewer](20260726_0210-p1-omr-overlay-viewer.md) | 857/857 Inter overlay khớp pixel-perfect. Lọc grade lộ OCR dấu Việt yếu + false positive. |
 | 2026-07-26 01:56 | [Khả thi Port GUI → Web](20260726_0156-port-gui-web.md) | ~289 file Swing, không REST → không compile/không rewrite JS. Chọn A: web mỏng + JVM service tái dùng model. Bằng chứng `.omr`/Inter/bounds. |
@@ -22,6 +23,7 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 
 1. Fork: [hacmieu/audiveris](https://github.com/hacmieu/audiveris) · Java 25.
 2. Batch OMR + playback CLI + **FE alphaTab** đều đã chạy được với file Yêu Xa.
-3. FE: `cd web && npm run dev` → http://localhost:5173/ (2 chế độ: Player · OMR Viewer).
+3. FE: `cd web && npm run dev` → http://localhost:5173/ (3 chế độ: Player · OMR Viewer · Thư viện).
+   Thư viện/catalog: `python3 tools/library.py …` ([report](20260726_2235-library-20k-mvp.md)).
 4. Port GUI → web: **P1–P3 + P6 xong** (xem/xóa/đổi role/**thêm** Inter từ browser). Bàn giao: [plans/…-p6-…](../plans/20260726_0619-p6-them-inter.md) (còn P4/P5/P7).
 5. Chất lượng OMR: OCR lời Việt + TextRole; đã demo sửa Capella-style từ web.

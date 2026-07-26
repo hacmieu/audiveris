@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 06:19 | [**P6 xong — thêm Inter**](20260726_0619-p6-them-inter-xong.md) | **MỚI NHẤT.** Palette "+ Thêm" → click bản nhạc đặt ký hiệu/nốt. `POST /inter` + `AdditionTask`. Check: add NOTEHEAD/G_CLEF, undo về 856. |
+| 2026-07-26 22:35 | [**Library MVP xong**](20260726_2235-library-20k-xong.md) | **MỚI NHẤT.** Catalog SQLite + `tools/library.py` + tab Thư viện trên web (hướng 20k bản). Fix crash `beats` (mxl gộp music21). Bài Yêu Em: OMR 5 mvt + WAV 42s. |
+| 2026-07-26 06:19 | [P6 xong — thêm Inter](20260726_0619-p6-them-inter-xong.md) | Palette "+ Thêm" → click bản nhạc đặt ký hiệu/nốt. `POST /inter` + `AdditionTask`. Check: add NOTEHEAD/G_CLEF, undo về 856. |
 | 2026-07-26 02:28 | [P3 xong — sửa Inter](20260726_0228-p3-sua-inter-xong.md) | Xóa/đổi role/undo/save từ web. Book: 856 inters, Ballade→Lyrics. |
 | 2026-07-26 02:21 | [Capella: phân lớp nhạc/text](20260726_0221-capella-phan-lop-nhac-text.md) | Audiveris = Inter type + TextRole. Yêu Xa: 660 nhạc / 197 text; lời hay bị Direction. |
 | 2026-07-26 01:56 | [Port GUI → Web (PDCA)](20260726_0156-port-gui-web.md) | Chốt chiến lược A: web mỏng + JVM edit-service bọc `Book`/`SIGraph`/`UITask`. `.omr`=ZIP(book.xml+sheet#N.xml+BINARY.png); Inter có shape/grade/bounds. 7 phase. |
@@ -52,7 +53,14 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 - **Stack**: `web/` = Vite + React + `@coderline/alphatab`.
 - **Chạy**: `cd web && npm run dev` → http://localhost:5173/
 - **Tab** / **SoundFont HQ**: xem [reports/20260726_0130-…](../reports/20260726_0130-tab-va-soundfont-hq.md).
-- 2 chế độ: **Player** (phát) và **OMR Viewer** (xem nhận dạng).
+- 3 chế độ: **Player** (phát) · **OMR Viewer** (xem/sửa nhận dạng) · **Thư viện** (catalog).
+- ⚠️ **Không** gộp `.mxl` bằng music21 để phát trên alphaTab (crash `beats`) — dùng export chuẩn Audiveris.
+
+**Thư viện bản nhạc (hướng ~20k)** 📚
+- Catalog: `library/catalog.db` (SQLite) · PDF `library/pdfs/` · artifacts `library/works/<slug>/`.
+- CLI: `python3 tools/library.py ingest|adopt|process|status|list|export-index`.
+- Web đọc `web/public/library/index.json` (chạy `export-index` sau khi catalog đổi).
+- Scale plan: [reports/20260726_2235-library-20k-mvp.md](../reports/20260726_2235-library-20k-mvp.md).
 
 **Port GUI → Web** 🔬
 - Chiến lược **A**: web mỏng + JVM edit-service. 7 phase PDCA, **P1–P3 + P6 xong**.
