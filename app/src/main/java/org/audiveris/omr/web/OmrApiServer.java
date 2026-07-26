@@ -38,6 +38,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -68,7 +71,10 @@ import com.sun.net.httpserver.HttpServer;
  * {@code POST /api/sheet/{n}/inter/{id}/role} body {@code {"role":"Lyrics"}},
  * {@code POST /api/book/save|undo|redo}<br>
  * Add (P6): {@code POST /api/sheet/{n}/inter} body
- * {@code {"shape":"NOTEHEAD_BLACK","x":100,"y":200,"w":24,"h":20}}
+ * {@code {"shape":"NOTEHEAD_BLACK","x":100,"y":200,"w":24,"h":20}}<br>
+ * Multi-book (library): {@code GET /api/books},
+ * {@code POST /api/book/open} body {@code {"slug":"yeu-xa-sheet-nhac"}}
+ * (resolves {@code library/works/<slug>/<slug>.omr}; override via {@code -Domr.api.works=…}).
  */
 public class OmrApiServer
         extends RunClass
@@ -106,6 +112,7 @@ public class OmrApiServer
         try {
             final HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
             server.createContext("/api/health", this::health);
+            server.createContext("/api/books", this::booksList);
             server.createContext("/api/book", this::bookRoutes);
             server.createContext("/api/sheet", this::sheetRoutes);
             server.setExecutor(Executors.newCachedThreadPool());
@@ -126,7 +133,21 @@ public class OmrApiServer
             return;
         }
         writeJson(ex, 200, "{\"ok\":true,\"canUndo\":" + canUndo() + ",\"canRedo\":" + canRedo()
-                + ",\"dirty\":" + book.isModified() + "}");
+                + ",\"dirty\":" + book.isModified() + ",\"book\":" + jsonString(bookName()) + "}");
+    }
+
+    /** List .omr books under library/works (and always include the currently open book). */
+    private void booksList (HttpExchange ex)
+            throws IOException
+    {
+        if (preflight(ex)) {
+            return;
+        }
+        if (!"GET".equalsIgnoreCase(ex.getRequestMethod())) {
+            writeJson(ex, 405, "{\"error\":\"method not allowed\"}");
+            return;
+        }
+        writeJson(ex, 200, booksJson());
     }
 
     private void bookRoutes (HttpExchange ex)
@@ -175,6 +196,7 @@ public class OmrApiServer
                         historyCursor++;
                         writeJson(ex, 200, statusJson("redone", task.toString()));
                     }
+                    case "/api/book/open" -> openBook(ex);
                     default -> writeJson(ex, 404, "{\"error\":\"unknown book action\"}");
                 }
             }
@@ -182,6 +204,178 @@ public class OmrApiServer
             logger.warn("book route failed: {}", err.toString(), err);
             writeJson(ex, 500, "{\"error\":" + jsonString(err.toString()) + "}");
         }
+    }
+
+    /**
+     * Switch the live Book to another .omr (clears undo history).
+     * Body: {@code {"slug":"…"}} → {@code library/works/<slug>/<slug>.omr},
+     * or {@code {"path":"/abs/file.omr"}}.
+     */
+    private void openBook (HttpExchange ex)
+            throws IOException
+    {
+        final String body = readBody(ex);
+        final String slug = extractJsonString(body, "slug");
+        final String pathStr = extractJsonString(body, "path");
+        final Path omrPath;
+        if (slug != null && !slug.isBlank()) {
+            // Reject path traversal
+            if (slug.contains("/") || slug.contains("\\") || slug.contains("..")) {
+                writeJson(ex, 400, "{\"error\":\"invalid slug\"}");
+                return;
+            }
+            omrPath = worksDir().resolve(slug).resolve(slug + ".omr");
+        } else if (pathStr != null && !pathStr.isBlank()) {
+            omrPath = Path.of(pathStr);
+        } else {
+            writeJson(ex, 400, "{\"error\":\"body must be {\\\"slug\\\":\\\"…\\\"} or {\\\"path\\\":\\\"…\\\"}\"}");
+            return;
+        }
+
+        if (!Files.isRegularFile(omrPath)) {
+            writeJson(ex, 404, "{\"error\":\"omr not found\",\"path\":" + jsonString(omrPath.toString())
+                    + "}");
+            return;
+        }
+
+        if (book.getBookPath() != null && book.getBookPath().toAbsolutePath().normalize().equals(
+                omrPath.toAbsolutePath().normalize())) {
+            writeJson(ex, 200, bookMetaJson()); // already open
+            return;
+        }
+
+        if (book.isModified() || book.isDirty()) {
+            final boolean force =
+                    "true".equalsIgnoreCase(extractJsonString(body, "force"))
+                    || extractJsonBool(body, "force");
+            if (!force) {
+                // Refuse silent data loss — client must save, or pass force:true to discard.
+                writeJson(ex, 409, "{\"error\":\"current book is dirty — save or open with force:true\","
+                        + "\"dirty\":true,\"book\":" + jsonString(bookName()) + "}");
+                return;
+            }
+            logger.info("Discarding dirty book {} to open {}", bookName(), omrPath);
+        }
+
+        final Book newBook = Book.loadBook(omrPath);
+        if (newBook == null) {
+            writeJson(ex, 500, "{\"error\":\"failed to load book\",\"path\":"
+                    + jsonString(omrPath.toString()) + "}");
+            return;
+        }
+
+        try {
+            book.close(null);
+        } catch (Exception ignore) {
+            logger.debug("close previous book: {}", ignore.toString());
+        }
+
+        this.book = newBook;
+        history.clear();
+        historyCursor = -1;
+        for (SheetStub stub : book.getStubs()) {
+            logger.info("Loading sheet#{} of {} …", stub.getNumber(), bookName());
+            stub.getSheet();
+        }
+        logger.info("Opened book {}", omrPath);
+        writeJson(ex, 200, bookMetaJson());
+    }
+
+    private Path worksDir ()
+    {
+        final String prop = System.getProperty("omr.api.works");
+        if (prop != null && !prop.isBlank()) {
+            return Path.of(prop).toAbsolutePath().normalize();
+        }
+        final Path cwd = Path.of("").toAbsolutePath();
+        for (Path c : List.of(cwd.resolve("library/works"), cwd.resolve("../library/works"))) {
+            if (Files.isDirectory(c)) {
+                return c.normalize();
+            }
+        }
+        if (book.getBookPath() != null) {
+            final Path parent = book.getBookPath().getParent();
+            if (parent != null) {
+                final Path maybeWorks = parent.getParent();
+                if (maybeWorks != null && "works".equals(String.valueOf(maybeWorks.getFileName()))
+                        && Files.isDirectory(maybeWorks)) {
+                    return maybeWorks;
+                }
+                final Path sibling = parent.resolveSibling("library").resolve("works");
+                if (Files.isDirectory(sibling)) {
+                    return sibling.normalize();
+                }
+            }
+        }
+        return cwd.resolve("../library/works").normalize();
+    }
+
+    private String booksJson ()
+    {
+        final StringBuilder sb = new StringBuilder(512);
+        sb.append("{\"works\":").append(jsonString(worksDir().toString()));
+        sb.append(",\"current\":").append(jsonString(bookName()));
+        sb.append(",\"books\":[");
+        boolean first = true;
+        final Path works = worksDir();
+        if (Files.isDirectory(works)) {
+            try (DirectoryStream<Path> dirs = Files.newDirectoryStream(works)) {
+                final List<Path> sorted = new ArrayList<>();
+                for (Path d : dirs) {
+                    sorted.add(d);
+                }
+                sorted.sort(Comparator.comparing(p -> p.getFileName().toString()));
+                for (Path dir : sorted) {
+                    if (!Files.isDirectory(dir)) {
+                        continue;
+                    }
+                    final String slug = dir.getFileName().toString();
+                    final Path omr = dir.resolve(slug + ".omr");
+                    if (!Files.isRegularFile(omr)) {
+                        continue;
+                    }
+                    if (!first) {
+                        sb.append(',');
+                    }
+                    first = false;
+                    sb.append("{\"slug\":").append(jsonString(slug));
+                    sb.append(",\"title\":").append(jsonString(titleFromSlug(slug)));
+                    sb.append(",\"omr\":").append(jsonString(omr.toString()));
+                    sb.append(",\"current\":").append(slug.equals(bookName()));
+                    sb.append('}');
+                }
+            } catch (IOException ioe) {
+                logger.warn("scan works dir failed: {}", ioe.toString());
+            }
+        }
+        // Ensure current book is listed even if not under library/works
+        if (first && book.getBookPath() != null) {
+            sb.append("{\"slug\":").append(jsonString(bookName()));
+            sb.append(",\"title\":").append(jsonString(titleFromSlug(bookName())));
+            sb.append(",\"omr\":").append(jsonString(book.getBookPath().toString()));
+            sb.append(",\"current\":true}");
+        }
+        sb.append("]}");
+        return sb.toString();
+    }
+
+    private static String titleFromSlug (String slug)
+    {
+        final String[] parts = slug.replace('-', ' ').split("\\s+");
+        final StringBuilder sb = new StringBuilder();
+        for (String p : parts) {
+            if (p.isEmpty()) {
+                continue;
+            }
+            if (sb.length() > 0) {
+                sb.append(' ');
+            }
+            sb.append(Character.toUpperCase(p.charAt(0)));
+            if (p.length() > 1) {
+                sb.append(p.substring(1));
+            }
+        }
+        return sb.toString();
     }
 
     private void sheetRoutes (HttpExchange ex)
@@ -444,6 +638,7 @@ public class OmrApiServer
     {
         final StringBuilder sb = new StringBuilder(256);
         sb.append("{\"book\":").append(jsonString(bookName()));
+        sb.append(",\"slug\":").append(jsonString(bookName()));
         sb.append(",\"path\":").append(jsonString(String.valueOf(book.getBookPath())));
         sb.append(",\"dirty\":").append(book.isModified() || book.isDirty());
         sb.append(",\"canUndo\":").append(canUndo());
@@ -690,6 +885,29 @@ public class OmrApiServer
             return null;
         }
         return json.substring(q1 + 1, q2);
+    }
+
+    /** Tiny extractor for a JSON boolean, e.g. {@code "force":true}. */
+    private static boolean extractJsonBool (String json,
+                                            String key)
+    {
+        if (json == null) {
+            return false;
+        }
+        final String needle = "\"" + key + "\"";
+        final int k = json.indexOf(needle);
+        if (k < 0) {
+            return false;
+        }
+        final int colon = json.indexOf(':', k + needle.length());
+        if (colon < 0) {
+            return false;
+        }
+        int i = colon + 1;
+        while (i < json.length() && Character.isWhitespace(json.charAt(i))) {
+            i++;
+        }
+        return json.regionMatches(true, i, "true", 0, 4);
     }
 
     /** Tiny extractor for a numeric JSON value, e.g. {@code "x":123} or {@code "x":123.4}. */

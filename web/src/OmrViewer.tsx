@@ -43,10 +43,16 @@ export interface SheetData {
   relations: Relation[]
 }
 
-/** Prefer live JVM API (P2); fall back to static extract from P1. */
-const API_SHEET = '/api/sheet/1'
+/** Prefer live JVM API; fall back to static extract of the first known book. */
 const STATIC_DIR = '/omr/yeu-xa-sheet-nhac'
 const STATIC_FILE = 'sheet-1.json'
+
+interface LibraryBook {
+  slug: string
+  title: string
+  omr: string
+  current: boolean
+}
 
 const LOW_GRADE = 0.5
 const MID_GRADE = 0.7
@@ -141,13 +147,13 @@ function matchesLayer(inter: Inter, layer: Layer): boolean {
   }
 }
 
-async function loadSheet(): Promise<SheetData> {
+async function loadSheet(sheetNum: number): Promise<SheetData> {
+  const apiBase = `/api/sheet/${sheetNum}`
   try {
-    const r = await fetch(`${API_SHEET}/data`)
+    const r = await fetch(`${apiBase}/data`)
     if (r.ok) {
       const d = (await r.json()) as SheetData
-      // Live API serves PNG at /api/sheet/n/image — rewrite for <img>.
-      return { ...d, image: `${API_SHEET}/image` }
+      return { ...d, image: `${apiBase}/image` }
     }
   } catch {
     // API not up — use static extract.
@@ -155,14 +161,20 @@ async function loadSheet(): Promise<SheetData> {
   const r = await fetch(`${STATIC_DIR}/${STATIC_FILE}`)
   if (!r.ok) {
     throw new Error(
-      `HTTP ${r.status} — chạy tools/omr_extract.py hoặc start OmrApiServer (P2)`,
+      `HTTP ${r.status} — chạy tools/omr_extract.py hoặc start OmrApiServer`,
     )
   }
   const d = (await r.json()) as SheetData
   return { ...d, image: `${STATIC_DIR}/${d.image}` }
 }
 
-export default function OmrViewer() {
+interface OmrViewerProps {
+  /** When set (from Library "Sửa OMR"), open that slug via the API. */
+  requestedSlug?: string | null
+  onSlugHandled?: () => void
+}
+
+export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerProps) {
   const canvasRef = useRef<HTMLDivElement>(null)
   const [data, setData] = useState<SheetData | null>(null)
   const [source, setSource] = useState<'api' | 'static' | null>(null)
@@ -175,12 +187,58 @@ export default function OmrViewer() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [addShape, setAddShape] = useState<string>('')
   const [busy, setBusy] = useState(false)
+  const [books, setBooks] = useState<LibraryBook[]>([])
+  const [sheetNum, setSheetNum] = useState(1)
+  const [sheetCount, setSheetCount] = useState(1)
+  const [currentSlug, setCurrentSlug] = useState<string>('')
   const [edit, setEdit] = useState<EditStatus>({
     canUndo: false,
     canRedo: false,
     dirty: false,
     message: null,
   })
+
+  const refreshBooks = useCallback(async () => {
+    try {
+      const r = await fetch('/api/books')
+      if (!r.ok) return
+      const j = (await r.json()) as { books?: LibraryBook[]; current?: string }
+      setBooks(j.books ?? [])
+      if (j.current) setCurrentSlug(j.current)
+    } catch {
+      // API offline
+    }
+  }, [])
+
+  const refreshMeta = useCallback(async () => {
+    try {
+      const r = await fetch('/api/book')
+      if (!r.ok) return
+      const j = (await r.json()) as {
+        book?: string
+        slug?: string
+        sheets?: { sheet: number }[]
+        canUndo?: boolean
+        canRedo?: boolean
+        dirty?: boolean
+      }
+      const sheets = j.sheets ?? []
+      setSheetCount(Math.max(1, sheets.length))
+      if (j.slug || j.book) setCurrentSlug(j.slug || j.book || '')
+      setEdit((e) => ({
+        ...e,
+        canUndo: Boolean(j.canUndo),
+        canRedo: Boolean(j.canRedo),
+        dirty: Boolean(j.dirty),
+      }))
+      // If current sheet num is out of range after book switch, reset to 1
+      if (sheets.length > 0 && !sheets.some((s) => s.sheet === sheetNum)) {
+        setSheetNum(sheets[0].sheet)
+      }
+    } catch {
+      // ignore
+    }
+  }, [sheetNum])
 
   const refreshStatus = useCallback(async () => {
     if (source !== 'api') return
@@ -191,6 +249,7 @@ export default function OmrViewer() {
         canUndo?: boolean
         canRedo?: boolean
         dirty?: boolean
+        book?: string
       }
       setEdit((e) => ({
         ...e,
@@ -198,17 +257,73 @@ export default function OmrViewer() {
         canRedo: Boolean(j.canRedo),
         dirty: Boolean(j.dirty),
       }))
+      if (j.book) setCurrentSlug(j.book)
     } catch {
       // ignore
     }
   }, [source])
 
-  const reload = useCallback(async (keepSelection = true) => {
-    const d = await loadSheet()
-    setData(d)
-    setSource(d.image.startsWith('/api/') ? 'api' : 'static')
-    if (!keepSelection) setSelectedId(null)
-  }, [])
+  const reload = useCallback(
+    async (keepSelection = true) => {
+      const d = await loadSheet(sheetNum)
+      setData(d)
+      setSource(d.image.startsWith('/api/') ? 'api' : 'static')
+      if (!keepSelection) setSelectedId(null)
+    },
+    [sheetNum],
+  )
+
+  const openSlug = useCallback(
+    async (slug: string) => {
+      if (edit.dirty) {
+        const ok = window.confirm(
+          `Bài "${currentSlug}" đang có thay đổi chưa lưu. Đổi bài sẽ bỏ các sửa đó. Tiếp tục?`,
+        )
+        if (!ok) return
+      }
+      setBusy(true)
+      setError(null)
+      try {
+        const r = await fetch('/api/book/open', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug, force: true }),
+        })
+        const j = (await r.json()) as {
+          error?: string
+          book?: string
+          sheets?: { sheet: number }[]
+          dirty?: boolean
+        }
+        if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`)
+        const sheets = j.sheets ?? [{ sheet: 1 }]
+        setSheetCount(sheets.length)
+        setSheetNum(sheets[0].sheet)
+        setCurrentSlug(j.book || slug)
+        setSelectedId(null)
+        setEdit((e) => ({
+          ...e,
+          canUndo: false,
+          canRedo: false,
+          dirty: Boolean(j.dirty),
+          message: `Đã mở: ${j.book || slug}`,
+        }))
+        await refreshBooks()
+        // loadSheet uses sheetNum state — setSheetNum is async; load sheet 1 explicitly
+        const d = await loadSheet(sheets[0].sheet)
+        setData(d)
+        setSource(d.image.startsWith('/api/') ? 'api' : 'static')
+      } catch (err) {
+        setEdit((e) => ({
+          ...e,
+          message: err instanceof Error ? err.message : String(err),
+        }))
+      } finally {
+        setBusy(false)
+      }
+    },
+    [refreshBooks, edit.dirty, currentSlug],
+  )
 
   const mutate = useCallback(
     async (label: string, run: () => Promise<Response>) => {
@@ -255,29 +370,29 @@ export default function OmrViewer() {
     if (!window.confirm(`Xóa Inter #${selectedId}?`)) return
     const id = selectedId
     void mutate('Xóa', () =>
-      fetch(`/api/sheet/1/inter/${id}`, { method: 'DELETE' }),
+      fetch(`/api/sheet/${sheetNum}/inter/${id}`, { method: 'DELETE' }),
     ).then(() => setSelectedId(null))
-  }, [selectedId, mutate])
+  }, [selectedId, mutate, sheetNum])
 
   const changeRole = useCallback(
     (role: string) => {
       if (selectedId === null) return
       void mutate('Đổi role', () =>
-        fetch(`/api/sheet/1/inter/${selectedId}/role`, {
+        fetch(`/api/sheet/${sheetNum}/inter/${selectedId}/role`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ role }),
         }),
       )
     },
-    [selectedId, mutate],
+    [selectedId, mutate, sheetNum],
   )
 
   const addInterAt = useCallback(
     (sheetX: number, sheetY: number) => {
       if (!addShape) return
       void mutate(`Thêm ${addShape}`, () =>
-        fetch('/api/sheet/1/inter', {
+        fetch(`/api/sheet/${sheetNum}/inter`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -288,7 +403,7 @@ export default function OmrViewer() {
         }),
       )
     },
-    [addShape, mutate],
+    [addShape, mutate, sheetNum],
   )
 
   const onStageClick = useCallback(
@@ -316,7 +431,9 @@ export default function OmrViewer() {
 
   useEffect(() => {
     let cancelled = false
-    loadSheet()
+    void refreshBooks()
+    void refreshMeta()
+    loadSheet(sheetNum)
       .then((d) => {
         if (cancelled) return
         setData(d)
@@ -328,7 +445,42 @@ export default function OmrViewer() {
     return () => {
       cancelled = true
     }
+    // initial mount only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Reload when sheet number changes (after initial)
+  useEffect(() => {
+    if (!source) return
+    let cancelled = false
+    setBusy(true)
+    loadSheet(sheetNum)
+      .then((d) => {
+        if (cancelled) return
+        setData(d)
+        setSource(d.image.startsWith('/api/') ? 'api' : 'static')
+        setSelectedId(null)
+      })
+      .catch((e: unknown) => {
+        if (!cancelled) setError(e instanceof Error ? e.message : String(e))
+      })
+      .finally(() => {
+        if (!cancelled) setBusy(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [sheetNum]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Open slug requested from Library tab
+  useEffect(() => {
+    if (!requestedSlug) return
+    if (requestedSlug === currentSlug) {
+      onSlugHandled?.()
+      return
+    }
+    void openSlug(requestedSlug).then(() => onSlugHandled?.())
+  }, [requestedSlug, currentSlug, openSlug, onSlugHandled])
 
   useEffect(() => {
     void refreshStatus()
@@ -430,6 +582,43 @@ export default function OmrViewer() {
   return (
     <div className="omr">
       <div className="omr-toolbar">
+        {source === 'api' && books.length > 0 && (
+          <label className="omr-select omr-book">
+            Bài
+            <select
+              disabled={busy}
+              value={currentSlug}
+              onChange={(e) => {
+                const slug = e.target.value
+                if (slug && slug !== currentSlug) void openSlug(slug)
+              }}
+            >
+              {books.map((b) => (
+                <option key={b.slug} value={b.slug}>
+                  {b.title}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
+        {source === 'api' && sheetCount > 1 && (
+          <label className="omr-select">
+            Trang
+            <select
+              disabled={busy}
+              value={sheetNum}
+              onChange={(e) => setSheetNum(Number(e.target.value))}
+            >
+              {Array.from({ length: sheetCount }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>
+                  {n}/{sheetCount}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+
         <div className="omr-zoom">
           <button type="button" onClick={() => setZoom((z) => Math.max(0.05, z - 0.1))}>
             −

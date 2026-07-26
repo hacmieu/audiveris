@@ -104,6 +104,7 @@ export default function App() {
   const [soundFontName, setSoundFontName] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [mode, setMode] = useState<Mode>('player')
+  const [omrSlug, setOmrSlug] = useState<string | null>(null)
 
   useEffect(() => {
     if (!mainRef.current || !viewportRef.current) return
@@ -348,6 +349,11 @@ export default function App() {
     api.load(url)
   }, [])
 
+  const editOmrFromLibrary = useCallback((slug: string, _title: string) => {
+    setOmrSlug(slug)
+    setMode('omr')
+  }, [])
+
   return (
     <div className="app" ref={wrapRef}>
       <header className="topbar">
@@ -407,8 +413,15 @@ export default function App() {
         </div>
       </header>
 
-      {mode === 'omr' && <OmrViewer />}
-      {mode === 'library' && <Library onOpen={openFromLibrary} />}
+      {mode === 'omr' && (
+        <OmrViewer
+          requestedSlug={omrSlug}
+          onSlugHandled={() => setOmrSlug(null)}
+        />
+      )}
+      {mode === 'library' && (
+        <Library onOpen={openFromLibrary} onEditOmr={editOmrFromLibrary} />
+      )}
 
       <div className="stage" hidden={mode !== 'player'}>
         <aside className="sidebar">

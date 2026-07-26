@@ -127,6 +127,25 @@
   border-color: var(--accent);
 }
 
+.lib-omr {
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 0.22rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.lib-omr:hover {
+  background: white;
+}
+
+.lib-none-inline {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  font-style: normal;
+}
+
 .lib-parts em {
   color: var(--ink-muted);
   font-size: 0.8rem;

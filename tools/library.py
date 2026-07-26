@@ -316,6 +316,9 @@ def cmd_export_index(_: argparse.Namespace) -> None:
             "status": row["status"],
             "pages": row["pages"],
             "warnings": row["warnings"],
+            "omr": bool(row["omr_path"]) and (REPO / row["omr_path"]).exists()
+            if row["omr_path"]
+            else False,
             "parts": parts,
         })
     index = {"generated": now(), "count": len(entries), "scores": entries}

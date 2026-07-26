@@ -12,6 +12,7 @@ interface LibraryScore {
   status: string
   pages: number | null
   warnings: number
+  omr: boolean
   parts: LibraryPart[]
 }
 
@@ -24,6 +25,8 @@ interface LibraryIndex {
 interface Props {
   /** Open a playable part in the Player mode. */
   onOpen: (url: string, title: string) => void
+  /** Open the .omr of this score in OMR Viewer. */
+  onEditOmr?: (slug: string, title: string) => void
 }
 
 const STATUS_LABEL: Record<string, string> = {
@@ -33,7 +36,7 @@ const STATUS_LABEL: Record<string, string> = {
   failed: 'Lỗi',
 }
 
-export default function Library({ onOpen }: Props) {
+export default function Library({ onOpen, onEditOmr }: Props) {
   const [index, setIndex] = useState<LibraryIndex | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
@@ -108,6 +111,7 @@ export default function Library({ onOpen }: Props) {
               <th>Trạng thái</th>
               <th>Trang</th>
               <th>Phát</th>
+              <th>OMR</th>
             </tr>
           </thead>
           <tbody>
@@ -141,6 +145,19 @@ export default function Library({ onOpen }: Props) {
                     ))}
                     {s.parts.length === 0 && <em>chưa có MusicXML</em>}
                   </div>
+                </td>
+                <td>
+                  {s.omr && onEditOmr ? (
+                    <button
+                      type="button"
+                      className="lib-omr"
+                      onClick={() => onEditOmr(s.slug, s.title)}
+                    >
+                      Sửa OMR
+                    </button>
+                  ) : (
+                    <em className="lib-none-inline">—</em>
+                  )}
                 </td>
               </tr>
             ))}

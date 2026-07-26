@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 22:52 | [**Gom movement (indentations)**](../reports/20260726_2252-gom-movement-indentation.md) | **MỚI NHẤT.** Bài bị tách 5 phần do công tắc `indentations`. Tắt → 1 FULL. `library.py` bật mặc định off. |
+| 2026-07-26 23:08 | [**OMR multi-book**](20260726_2308-omr-viewer-multi-book.md) | **MỚI NHẤT.** OMR Viewer đổi bài qua catalog (`/api/books` + `book/open`). Thư viện có nút Sửa OMR. |
+| 2026-07-26 22:52 | [Gom movement (indentations)](../reports/20260726_2252-gom-movement-indentation.md) | Bài bị tách 5 phần do công tắc `indentations`. Tắt → 1 FULL. `library.py` bật mặc định off. |
 | 2026-07-26 22:35 | [Library MVP xong](20260726_2235-library-20k-xong.md) | Catalog SQLite + `tools/library.py` + tab Thư viện trên web (hướng 20k bản). Fix crash `beats` (mxl gộp music21). |
 | 2026-07-26 06:19 | [P6 xong — thêm Inter](20260726_0619-p6-them-inter-xong.md) | Palette "+ Thêm" → click bản nhạc đặt ký hiệu/nốt. `POST /inter` + `AdditionTask`. Check: add NOTEHEAD/G_CLEF, undo về 856. |
 | 2026-07-26 02:28 | [P3 xong — sửa Inter](20260726_0228-p3-sua-inter-xong.md) | Xóa/đổi role/undo/save từ web. Book: 856 inters, Ballade→Lyrics. |
@@ -66,7 +67,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 **Port GUI → Web** 🔬
 - Chiến lược **A**: web mỏng + JVM edit-service. 7 phase PDCA, **P1–P3 + P6 xong**.
 - **Capella**: tách nhạc/text + đổi `TextRole`; **xóa** Inter (P3) & **thêm** Inter (P6); Undo/Redo; Save `.omr`.
-- API: `OmrApiServer` → `:8080/api/…` (GET + DELETE inter + **POST /inter** thêm + POST role/undo/redo/save)
+- API: `OmrApiServer` → `:8080/api/…` (GET + DELETE inter + **POST /inter** thêm + POST role/undo/redo/save + **GET /books** + **POST /book/open**)
 - **Thêm (P6):** `POST /api/sheet/{n}/inter {shape,x,y}` → `createManual`+`searchLinks`+`AdditionTask`.
-- Book Yêu Xa: **856** inters; `#3143` Lyrics; `#1269` đã xóa.
-- **Bàn giao / bước kế**: [plans/20260726_0619-p6-them-inter.md](../plans/20260726_0619-p6-them-inter.md) (còn P4/P5/P7).
+- **Multi-book:** OMR Viewer chọn bài từ `library/works` / Thư viện nút Sửa OMR.
+- Book Yêu Xa: **856** inters; Yêu Em FULL: sheet1 **614** + sheet2 **226**.
+- **Bàn giao / bước kế**: [plans/20260726_2308-omr-viewer-multi-book.md](../plans/20260726_2308-omr-viewer-multi-book.md).

@@ -6,7 +6,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 | Ngày giờ | Kế hoạch | Trạng thái | Tóm tắt |
 |---|---|---|---|
-| 2026-07-26 22:26 | [**Library ~20k bản nhạc** (PDCA)](20260726_2226-library-20k.md) | ✅ **MVP XONG** | **MỚI NHẤT.** SQLite catalog + `tools/library.py` + tab Thư viện. Scale: song song + installDist + FTS5. Report: [../reports/20260726_2235-…](../reports/20260726_2235-library-20k-mvp.md). |
+| 2026-07-26 23:08 | [**OMR Viewer multi-book**](20260726_2308-omr-viewer-multi-book.md) | ✅ **XONG** | **MỚI NHẤT.** Đổi `.omr` khi API đang chạy; Sửa OMR từ Thư viện. Report: [../reports/20260726_2308-…](../reports/20260726_2308-omr-viewer-multi-book.md). |
+| 2026-07-26 22:26 | [Library ~20k bản nhạc (PDCA)](20260726_2226-library-20k.md) | ✅ **MVP XONG** | SQLite catalog + `tools/library.py` + tab Thư viện. Scale: song song + installDist + FTS5. Report: [../reports/20260726_2235-…](../reports/20260726_2235-library-20k-mvp.md). |
 | 2026-07-26 06:19 | [P6 — Thêm Inter (palette + click)](20260726_0619-p6-them-inter.md) | ✅ **XONG** | `POST /inter`+`AdditionTask`; palette "+ Thêm". Report: [../reports/20260726_0619-…](../reports/20260726_0619-p6-them-inter.md). |
 | 2026-07-26 02:28 | [P4 — Relation / Lyrics convert + BÀN GIAO](20260726_0228-p4-relation-va-role-sau.md) | ⬜ CHƯA BẮT ĐẦU | Link/unlink hoặc convert Lyrics đầy đủ; hoặc nhảy P5 export. |
 | 2026-07-26 02:21 | [P3 — Sửa Inter](20260726_0221-p3-sua-inter.md) | ✅ **XONG** | Remove + TextRole + undo/redo/save. Report: [../reports/20260726_0228-…](../reports/20260726_0228-p3-sua-inter.md). |
