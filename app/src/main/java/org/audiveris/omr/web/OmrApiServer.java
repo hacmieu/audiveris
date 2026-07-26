@@ -136,7 +136,7 @@ public class OmrApiServer
                 + ",\"dirty\":" + book.isModified() + ",\"book\":" + jsonString(bookName()) + "}");
     }
 
-    /** List .omr books under library/works (and always include the currently open book). */
+    /** List .omr books under library/works. Supports {@code ?q=} + {@code ?limit=} (default 20). */
     private void booksList (HttpExchange ex)
             throws IOException
     {
@@ -147,7 +147,13 @@ public class OmrApiServer
             writeJson(ex, 405, "{\"error\":\"method not allowed\"}");
             return;
         }
-        writeJson(ex, 200, booksJson());
+        final String rawQuery = ex.getRequestURI().getRawQuery();
+        final String q = queryParam(rawQuery, "q");
+        final Integer limitParam = queryParamInt(rawQuery, "limit");
+        // Cap always — never dump unbounded catalog to the browser.
+        final int limit = limitParam != null ? Math.min(Math.max(limitParam, 1), 100)
+                : (q != null && !q.isBlank() ? 20 : 20);
+        writeJson(ex, 200, booksJson(q, limit));
     }
 
     private void bookRoutes (HttpExchange ex)
@@ -310,13 +316,12 @@ public class OmrApiServer
         return cwd.resolve("../library/works").normalize();
     }
 
-    private String booksJson ()
+    private String booksJson (String q,
+                              int limit)
     {
-        final StringBuilder sb = new StringBuilder(512);
-        sb.append("{\"works\":").append(jsonString(worksDir().toString()));
-        sb.append(",\"current\":").append(jsonString(bookName()));
-        sb.append(",\"books\":[");
-        boolean first = true;
+        final String needle = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
+        final List<String[]> matched = new ArrayList<>(); // [slug, title, omr, current]
+        int total = 0;
         final Path works = worksDir();
         if (Files.isDirectory(works)) {
             try (DirectoryStream<Path> dirs = Files.newDirectoryStream(works)) {
@@ -334,29 +339,98 @@ public class OmrApiServer
                     if (!Files.isRegularFile(omr)) {
                         continue;
                     }
-                    if (!first) {
-                        sb.append(',');
+                    total++;
+                    final String title = titleFromSlug(slug);
+                    if (!needle.isEmpty()
+                            && !slug.contains(needle)
+                            && !title.toLowerCase(Locale.ROOT).contains(needle)) {
+                        continue;
                     }
-                    first = false;
-                    sb.append("{\"slug\":").append(jsonString(slug));
-                    sb.append(",\"title\":").append(jsonString(titleFromSlug(slug)));
-                    sb.append(",\"omr\":").append(jsonString(omr.toString()));
-                    sb.append(",\"current\":").append(slug.equals(bookName()));
-                    sb.append('}');
+                    if (matched.size() < limit) {
+                        matched.add(new String[] {
+                            slug,
+                            title,
+                            omr.toString(),
+                            Boolean.toString(slug.equals(bookName()))
+                        });
+                    }
                 }
             } catch (IOException ioe) {
                 logger.warn("scan works dir failed: {}", ioe.toString());
             }
         }
-        // Ensure current book is listed even if not under library/works
-        if (first && book.getBookPath() != null) {
-            sb.append("{\"slug\":").append(jsonString(bookName()));
-            sb.append(",\"title\":").append(jsonString(titleFromSlug(bookName())));
-            sb.append(",\"omr\":").append(jsonString(book.getBookPath().toString()));
-            sb.append(",\"current\":true}");
+        if (matched.isEmpty() && book.getBookPath() != null
+                && (needle.isEmpty() || bookName().toLowerCase(Locale.ROOT).contains(needle))) {
+            matched.add(new String[] {
+                bookName(),
+                titleFromSlug(bookName()),
+                book.getBookPath().toString(),
+                "true"
+            });
+            if (total == 0) {
+                total = 1;
+            }
+        }
+
+        final StringBuilder sb = new StringBuilder(512);
+        sb.append("{\"works\":").append(jsonString(worksDir().toString()));
+        sb.append(",\"current\":").append(jsonString(bookName()));
+        sb.append(",\"q\":").append(jsonString(q));
+        sb.append(",\"limit\":").append(limit);
+        sb.append(",\"total\":").append(total);
+        sb.append(",\"returned\":").append(matched.size());
+        sb.append(",\"books\":[");
+        for (int i = 0; i < matched.size(); i++) {
+            if (i > 0) {
+                sb.append(',');
+            }
+            final String[] row = matched.get(i);
+            sb.append("{\"slug\":").append(jsonString(row[0]));
+            sb.append(",\"title\":").append(jsonString(row[1]));
+            sb.append(",\"omr\":").append(jsonString(row[2]));
+            sb.append(",\"current\":").append(Boolean.parseBoolean(row[3]));
+            sb.append('}');
         }
         sb.append("]}");
         return sb.toString();
+    }
+
+    private static String queryParam (String rawQuery,
+                                      String key)
+    {
+        if (rawQuery == null || rawQuery.isEmpty()) {
+            return null;
+        }
+        for (String part : rawQuery.split("&")) {
+            final int eq = part.indexOf('=');
+            final String k = eq < 0 ? part : part.substring(0, eq);
+            if (!key.equals(k)) {
+                continue;
+            }
+            if (eq < 0) {
+                return "";
+            }
+            try {
+                return java.net.URLDecoder.decode(part.substring(eq + 1), StandardCharsets.UTF_8);
+            } catch (IllegalArgumentException iae) {
+                return part.substring(eq + 1);
+            }
+        }
+        return null;
+    }
+
+    private static Integer queryParamInt (String rawQuery,
+                                          String key)
+    {
+        final String v = queryParam(rawQuery, key);
+        if (v == null || v.isBlank()) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(v);
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
     }
 
     private static String titleFromSlug (String slug)

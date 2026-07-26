@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import BookPicker from './BookPicker'
 import './OmrViewer.css'
 
 /** One Audiveris Inter, bounds in sheet image pixel coordinates. */
@@ -46,13 +47,6 @@ export interface SheetData {
 /** Prefer live JVM API; fall back to static extract of the first known book. */
 const STATIC_DIR = '/omr/yeu-xa-sheet-nhac'
 const STATIC_FILE = 'sheet-1.json'
-
-interface LibraryBook {
-  slug: string
-  title: string
-  omr: string
-  current: boolean
-}
 
 const LOW_GRADE = 0.5
 const MID_GRADE = 0.7
@@ -187,7 +181,6 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [addShape, setAddShape] = useState<string>('')
   const [busy, setBusy] = useState(false)
-  const [books, setBooks] = useState<LibraryBook[]>([])
   const [sheetNum, setSheetNum] = useState(1)
   const [sheetCount, setSheetCount] = useState(1)
   const [currentSlug, setCurrentSlug] = useState<string>('')
@@ -197,18 +190,6 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
     dirty: false,
     message: null,
   })
-
-  const refreshBooks = useCallback(async () => {
-    try {
-      const r = await fetch('/api/books')
-      if (!r.ok) return
-      const j = (await r.json()) as { books?: LibraryBook[]; current?: string }
-      setBooks(j.books ?? [])
-      if (j.current) setCurrentSlug(j.current)
-    } catch {
-      // API offline
-    }
-  }, [])
 
   const refreshMeta = useCallback(async () => {
     try {
@@ -308,7 +289,6 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
           dirty: Boolean(j.dirty),
           message: `Đã mở: ${j.book || slug}`,
         }))
-        await refreshBooks()
         // loadSheet uses sheetNum state — setSheetNum is async; load sheet 1 explicitly
         const d = await loadSheet(sheets[0].sheet)
         setData(d)
@@ -322,7 +302,7 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
         setBusy(false)
       }
     },
-    [refreshBooks, edit.dirty, currentSlug],
+    [edit.dirty, currentSlug],
   )
 
   const mutate = useCallback(
@@ -431,7 +411,6 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
 
   useEffect(() => {
     let cancelled = false
-    void refreshBooks()
     void refreshMeta()
     loadSheet(sheetNum)
       .then((d) => {
@@ -582,24 +561,14 @@ export default function OmrViewer({ requestedSlug, onSlugHandled }: OmrViewerPro
   return (
     <div className="omr">
       <div className="omr-toolbar">
-        {source === 'api' && books.length > 0 && (
-          <label className="omr-select omr-book">
-            Bài
-            <select
-              disabled={busy}
-              value={currentSlug}
-              onChange={(e) => {
-                const slug = e.target.value
-                if (slug && slug !== currentSlug) void openSlug(slug)
-              }}
-            >
-              {books.map((b) => (
-                <option key={b.slug} value={b.slug}>
-                  {b.title}
-                </option>
-              ))}
-            </select>
-          </label>
+        {source === 'api' && (
+          <BookPicker
+            currentSlug={currentSlug}
+            disabled={busy}
+            onOpen={(slug) => {
+              if (slug !== currentSlug) void openSlug(slug)
+            }}
+          />
         )}
 
         {source === 'api' && sheetCount > 1 && (
