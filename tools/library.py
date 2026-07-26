@@ -193,7 +193,10 @@ def cmd_adopt(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------- process
 
 
-GRADLE_ARGS = "-batch,-transcribe,-export,-output,{out},{pdfs}"
+# indentations=false: don't treat an indented first system as a new movement.
+# Most songs here are one continuous piece; the default (true) over-splits into
+# many tiny .mxl. Pass --split-movements to keep Audiveris' default behaviour.
+NO_SPLIT_CONST = "org.audiveris.omr.sheet.ProcessingSwitches.indentations=false"
 
 
 def cmd_process(args: argparse.Namespace) -> None:
@@ -212,7 +215,11 @@ def cmd_process(args: argparse.Namespace) -> None:
     for bi, batch in enumerate(batches, 1):
         tmp_out = LIB / "tmp-out"
         pdf_args = ",".join(str(REPO / r["pdf_path"]) for r in batch)
-        cmdline = GRADLE_ARGS.format(out=tmp_out, pdfs=pdf_args)
+        parts = ["-batch", "-transcribe", "-export"]
+        if not args.split_movements:
+            parts += ["-constant", NO_SPLIT_CONST]
+        parts += ["-output", str(tmp_out), pdf_args]
+        cmdline = ",".join(parts)
         cmd = ["./gradlew", ":app:run", "--no-daemon", "--console=plain",
                f"-PcmdLineArgs={cmdline}"]
         print(f"[batch {bi}/{len(batches)}] {' '.join(cmd)}")
@@ -338,6 +345,8 @@ def main() -> None:
     p.add_argument("--limit", type=int, default=10)
     p.add_argument("--batch-size", type=int, default=10)
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--split-movements", action="store_true",
+                   help="keep Audiveris' indentation-based movement split (default: off)")
     p.set_defaults(fn=cmd_process)
 
     p = sub.add_parser("status")

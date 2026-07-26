@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 22:35 | [**Library MVP xong**](20260726_2235-library-20k-xong.md) | **MỚI NHẤT.** Catalog SQLite + `tools/library.py` + tab Thư viện trên web (hướng 20k bản). Fix crash `beats` (mxl gộp music21). Bài Yêu Em: OMR 5 mvt + WAV 42s. |
+| 2026-07-26 22:52 | [**Gom movement (indentations)**](../reports/20260726_2252-gom-movement-indentation.md) | **MỚI NHẤT.** Bài bị tách 5 phần do công tắc `indentations`. Tắt → 1 FULL. `library.py` bật mặc định off. |
+| 2026-07-26 22:35 | [Library MVP xong](20260726_2235-library-20k-xong.md) | Catalog SQLite + `tools/library.py` + tab Thư viện trên web (hướng 20k bản). Fix crash `beats` (mxl gộp music21). |
 | 2026-07-26 06:19 | [P6 xong — thêm Inter](20260726_0619-p6-them-inter-xong.md) | Palette "+ Thêm" → click bản nhạc đặt ký hiệu/nốt. `POST /inter` + `AdditionTask`. Check: add NOTEHEAD/G_CLEF, undo về 856. |
 | 2026-07-26 02:28 | [P3 xong — sửa Inter](20260726_0228-p3-sua-inter-xong.md) | Xóa/đổi role/undo/save từ web. Book: 856 inters, Ballade→Lyrics. |
 | 2026-07-26 02:21 | [Capella: phân lớp nhạc/text](20260726_0221-capella-phan-lop-nhac-text.md) | Audiveris = Inter type + TextRole. Yêu Xa: 660 nhạc / 197 text; lời hay bị Direction. |

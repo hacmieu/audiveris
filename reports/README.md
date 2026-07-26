@@ -6,7 +6,8 @@ Thư mục chứa các báo cáo phân tích/điều tra. Định dạng file: `
 
 | Ngày giờ | Báo cáo | Tóm tắt |
 |---|---|---|
-| 2026-07-26 22:35 | [**✅ Library MVP (hướng 20k)**](20260726_2235-library-20k-mvp.md) | **MỚI NHẤT.** SQLite catalog + CLI pipeline + tab Thư viện; fix crash `beats`. Browser test 4/4 PASS. Kèm lộ trình scale 20k. |
+| 2026-07-26 22:52 | [**✅ Gom movement (indentations)**](20260726_2252-gom-movement-indentation.md) | **MỚI NHẤT.** Vì sao bài bị tách 5 phần + cách tắt `indentations` để ra 1 FULL. Key đúng KHÔNG có `$Constants`. |
+| 2026-07-26 22:35 | [✅ Library MVP (hướng 20k)](20260726_2235-library-20k-mvp.md) | SQLite catalog + CLI pipeline + tab Thư viện; fix crash `beats`. Browser test 4/4 PASS. Kèm lộ trình scale 20k. |
 | 2026-07-26 06:19 | [✅ P6 — Thêm Inter qua API](20260726_0619-p6-them-inter.md) | `POST /inter` + palette "+ Thêm". Check: add NOTEHEAD_BLACK(pitch −2.0)/G_CLEF, shape sai→400, undo về 856, `.omr` nguyên vẹn. |
 | 2026-07-26 02:28 | [✅ P3 — Sửa Inter qua API](20260726_0228-p3-sua-inter.md) | DELETE inter + POST TextRole + undo/redo/save. Check: xóa NOTEHEAD_BLACK #1269, Ballade→Lyrics, persist trong `.omr`. |
 | 2026-07-26 02:10 | [✅ P1 — OMR Overlay Viewer](20260726_0210-p1-omr-overlay-viewer.md) | 857/857 Inter overlay khớp pixel-perfect. Lọc grade lộ OCR dấu Việt yếu + false positive. |
