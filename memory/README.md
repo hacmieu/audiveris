@@ -6,7 +6,8 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 
 | Ngày giờ | Mục | Tóm tắt |
 |---|---|---|
-| 2026-07-26 02:28 | [**P3 xong — sửa Inter**](20260726_0228-p3-sua-inter-xong.md) | **MỚI NHẤT.** Xóa/đổi role/undo/save từ web. Book: 856 inters, Ballade→Lyrics. Bàn giao P4: [plans/…-p4-…](../plans/20260726_0228-p4-relation-va-role-sau.md). |
+| 2026-07-26 06:19 | [**P6 xong — thêm Inter**](20260726_0619-p6-them-inter-xong.md) | **MỚI NHẤT.** Palette "+ Thêm" → click bản nhạc đặt ký hiệu/nốt. `POST /inter` + `AdditionTask`. Check: add NOTEHEAD/G_CLEF, undo về 856. |
+| 2026-07-26 02:28 | [P3 xong — sửa Inter](20260726_0228-p3-sua-inter-xong.md) | Xóa/đổi role/undo/save từ web. Book: 856 inters, Ballade→Lyrics. |
 | 2026-07-26 02:21 | [Capella: phân lớp nhạc/text](20260726_0221-capella-phan-lop-nhac-text.md) | Audiveris = Inter type + TextRole. Yêu Xa: 660 nhạc / 197 text; lời hay bị Direction. |
 | 2026-07-26 01:56 | [Port GUI → Web (PDCA)](20260726_0156-port-gui-web.md) | Chốt chiến lược A: web mỏng + JVM edit-service bọc `Book`/`SIGraph`/`UITask`. `.omr`=ZIP(book.xml+sheet#N.xml+BINARY.png); Inter có shape/grade/bounds. 7 phase. |
 | 2026-07-26 01:48 | [GUI + tích hợp web](20260726_0148-gui-va-tich-hop-web.md) | Đã mở Audiveris GUI trên `.omr` Yêu Xa. Tích hợp = chia vai trò (GUI sửa / web nghe), không nhúng Swing vào browser. |
@@ -54,8 +55,9 @@ Thư mục lưu trữ "trí nhớ" bền vững của dự án: các sự thật
 - 2 chế độ: **Player** (phát) và **OMR Viewer** (xem nhận dạng).
 
 **Port GUI → Web** 🔬
-- Chiến lược **A**: web mỏng + JVM edit-service. 7 phase PDCA, **P1–P3 xong**.
-- **Capella**: tách nhạc/text + đổi `TextRole` từ web; xóa Inter; Undo/Redo; Save `.omr`.
-- API: `OmrApiServer` → `:8080/api/…` (GET + DELETE inter + POST role/undo/redo/save)
-- Book Yêu Xa sau P3 Check: **856** inters; `#3143` Lyrics; `#1269` đã xóa.
-- **Bàn giao / bước kế**: [plans/20260726_0228-p4-relation-va-role-sau.md](../plans/20260726_0228-p4-relation-va-role-sau.md).
+- Chiến lược **A**: web mỏng + JVM edit-service. 7 phase PDCA, **P1–P3 + P6 xong**.
+- **Capella**: tách nhạc/text + đổi `TextRole`; **xóa** Inter (P3) & **thêm** Inter (P6); Undo/Redo; Save `.omr`.
+- API: `OmrApiServer` → `:8080/api/…` (GET + DELETE inter + **POST /inter** thêm + POST role/undo/redo/save)
+- **Thêm (P6):** `POST /api/sheet/{n}/inter {shape,x,y}` → `createManual`+`searchLinks`+`AdditionTask`.
+- Book Yêu Xa: **856** inters; `#3143` Lyrics; `#1269` đã xóa.
+- **Bàn giao / bước kế**: [plans/20260726_0619-p6-them-inter.md](../plans/20260726_0619-p6-them-inter.md) (còn P4/P5/P7).

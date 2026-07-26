@@ -6,7 +6,8 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 | Ngày giờ | Kế hoạch | Trạng thái | Tóm tắt |
 |---|---|---|---|
-| 2026-07-26 02:28 | [**P4 — Relation / Lyrics convert** + BÀN GIAO](20260726_0228-p4-relation-va-role-sau.md) | ⬜ CHƯA BẮT ĐẦU | **Agent mới đọc file này.** Link/unlink hoặc convert Lyrics đầy đủ; hoặc nhảy P5 export. |
+| 2026-07-26 06:19 | [**P6 — Thêm Inter** (palette + click)](20260726_0619-p6-them-inter.md) | ✅ **XONG** | **MỚI NHẤT.** `POST /inter`+`AdditionTask`; palette "+ Thêm". Report: [../reports/20260726_0619-…](../reports/20260726_0619-p6-them-inter.md). |
+| 2026-07-26 02:28 | [P4 — Relation / Lyrics convert + BÀN GIAO](20260726_0228-p4-relation-va-role-sau.md) | ⬜ CHƯA BẮT ĐẦU | Link/unlink hoặc convert Lyrics đầy đủ; hoặc nhảy P5 export. |
 | 2026-07-26 02:21 | [P3 — Sửa Inter](20260726_0221-p3-sua-inter.md) | ✅ **XONG** | Remove + TextRole + undo/redo/save. Report: [../reports/20260726_0228-…](../reports/20260726_0228-p3-sua-inter.md). |
 | 2026-07-26 02:10 | [P2 — JVM edit-service](20260726_0210-p2-jvm-edit-service.md) | ✅ **XONG** | OmrApiServer (RunClass+HttpServer). Report: [../reports/20260726_0221-…](../reports/20260726_0221-p2-omr-api-va-lop-capella.md). |
 | 2026-07-26 01:56 | [Port GUI → Web (kế hoạch tổng 7 phase)](20260726_0156-port-gui-web.md) | 🟢 P1/7 XONG | Chiến lược A (web mỏng + JVM edit-service). P1 overlay read-only đã đạt Check. |
@@ -23,7 +24,7 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 | P3 | Ops sửa (remove / TextRole / undo / save) | ✅ **XONG** ([report](../reports/20260726_0228-p3-sua-inter.md)) |
 | P4 | Undo sâu / relation / Lyrics convert | ⬜ [kế hoạch](20260726_0228-p4-relation-va-role-sau.md) |
 | P5 | Export `.mxl` → alphaTab | ⬜ |
-| P6 | Palette + thêm Inter | ⬜ |
+| P6 | Palette + thêm Inter | ✅ **XONG** ([report](../reports/20260726_0619-p6-them-inter.md)) |
 | P7 | Re-run step | ⬜ |
 
 ## Tiến độ FE alphaTab
@@ -39,6 +40,7 @@ Thư mục chứa các kế hoạch công việc (đề xuất / đang làm / đ
 
 ## Việc tiếp theo
 
-1. **P4** — relation hoặc convert Lyrics đầy đủ ([kế hoạch](20260726_0228-p4-relation-va-role-sau.md)); hoặc **P5** export `.mxl` để nghe lại.
-2. Tiếp tục gán lại Direction → Lyrics cho lời Việt còn lại.
-3. OCR lời Việt có dấu.
+1. **P5** — export `.mxl` sau khi sửa → nạp lại alphaTab để nghe (giá trị cao vì đã có thêm/xóa/sửa).
+2. **P4** — relation link/unlink + convert Lyrics đầy đủ ([kế hoạch](20260726_0228-p4-relation-va-role-sau.md)).
+3. **P6b** — thêm text/lyrics (OCR glyph) + snap cao độ khi đặt nốt.
+4. **P7** — re-run step sau khi sửa; tiếp tục gán Direction → Lyrics cho lời Việt.

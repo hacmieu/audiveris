@@ -246,6 +246,24 @@
   border-style: dashed;
 }
 
+/* Add mode (P6): crosshair to place, boxes ignore clicks so the stage gets them. */
+.omr-stage.adding {
+  cursor: crosshair;
+}
+
+.omr-stage.adding .omr-box {
+  pointer-events: none;
+}
+
+.omr-add select {
+  border-color: var(--accent);
+}
+
+.omr-adding-hint {
+  background: #fef3c7;
+  border-color: #fcd34d;
+}
+
 .omr-edit {
   display: flex;
   gap: 0.35rem;

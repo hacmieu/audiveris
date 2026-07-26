@@ -5,17 +5,22 @@
 //------------------------------------------------------------------------------------------------//
 package org.audiveris.omr.web;
 
+import org.audiveris.omr.glyph.Shape;
 import org.audiveris.omr.sheet.Book;
 import org.audiveris.omr.sheet.Picture;
 import org.audiveris.omr.sheet.Sheet;
 import org.audiveris.omr.sheet.SheetStub;
 import org.audiveris.omr.sheet.Staff;
+import org.audiveris.omr.sheet.StaffManager;
 import org.audiveris.omr.sheet.SystemInfo;
+import org.audiveris.omr.sheet.symbol.InterFactory;
 import org.audiveris.omr.sig.SIGraph;
 import org.audiveris.omr.sig.inter.Inter;
 import org.audiveris.omr.sig.inter.SentenceInter;
 import org.audiveris.omr.sig.inter.WordInter;
+import org.audiveris.omr.sig.relation.Link;
 import org.audiveris.omr.sig.relation.Relation;
+import org.audiveris.omr.sig.ui.AdditionTask;
 import org.audiveris.omr.sig.ui.RemovalTask;
 import org.audiveris.omr.sig.ui.SentenceRoleTask;
 import org.audiveris.omr.sig.ui.UITask;
@@ -26,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +39,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -59,7 +66,9 @@ import com.sun.net.httpserver.HttpServer;
  * Read: {@code GET /api/health|/book|/sheet/{n}/data|inters|relations|image}<br>
  * Write (P3): {@code DELETE /api/sheet/{n}/inter/{id}},
  * {@code POST /api/sheet/{n}/inter/{id}/role} body {@code {"role":"Lyrics"}},
- * {@code POST /api/book/save|undo|redo}
+ * {@code POST /api/book/save|undo|redo}<br>
+ * Add (P6): {@code POST /api/sheet/{n}/inter} body
+ * {@code {"shape":"NOTEHEAD_BLACK","x":100,"y":200,"w":24,"h":20}}
  */
 public class OmrApiServer
         extends RunClass
@@ -231,6 +240,14 @@ public class OmrApiServer
                 }
             }
 
+            // Add: POST /api/sheet/{n}/inter  (no id yet)
+            if ("inter".equals(action) && parts.length == 3 && "POST".equals(method)) {
+                synchronized (editLock) {
+                    addInter(ex, sheet, stub);
+                }
+                return;
+            }
+
             // Mutations: /inter/{id} or /inter/{id}/role
             if (!"inter".equals(action) || parts.length < 4) {
                 writeJson(ex, 405, "{\"error\":\"method not allowed\"}");
@@ -293,6 +310,95 @@ public class OmrApiServer
     }
 
     //~ Edit helpers -------------------------------------------------------------------------------
+
+    /**
+     * Add a manual Inter of the given shape at the given bounds (P6).
+     * <p>
+     * Mirrors the single-staff branch of {@code InterController.determineStaff}: the ghost is
+     * created via {@link InterFactory#createManual}, positioned at the requested bounds, attached
+     * to the closest staff, then {@link Inter#searchLinks} finds candidate relations before the
+     * {@link AdditionTask} inserts it into the SIG.
+     */
+    private void addInter (HttpExchange ex,
+                           Sheet sheet,
+                           SheetStub stub)
+            throws IOException
+    {
+        final String body = readBody(ex);
+        final String shapeName = extractJsonString(body, "shape");
+        if (shapeName == null || shapeName.isBlank()) {
+            writeJson(ex, 400, "{\"error\":\"body must include \\\"shape\\\"\"}");
+            return;
+        }
+        final Shape shape;
+        try {
+            shape = Shape.valueOf(shapeName);
+        } catch (IllegalArgumentException iae) {
+            writeJson(ex, 400, "{\"error\":\"unknown shape\",\"shape\":" + jsonString(shapeName)
+                    + "}");
+            return;
+        }
+
+        final Integer x = extractJsonInt(body, "x");
+        final Integer y = extractJsonInt(body, "y");
+        if (x == null || y == null) {
+            writeJson(ex, 400, "{\"error\":\"body must include integer x and y\"}");
+            return;
+        }
+        final int w = extractJsonInt(body, "w") != null ? extractJsonInt(body, "w") : 0;
+        final int h = extractJsonInt(body, "h") != null ? extractJsonInt(body, "h") : 0;
+
+        final Inter ghost = InterFactory.createManual(shape, sheet);
+        if (ghost == null) {
+            writeJson(ex, 400, "{\"error\":\"shape not supported for manual add\",\"shape\":"
+                    + jsonString(shapeName) + "}");
+            return;
+        }
+
+        // Default box: a shape-sized square centered on the click when w/h are missing.
+        final int boxW = w > 0 ? w : defaultSide(sheet);
+        final int boxH = h > 0 ? h : defaultSide(sheet);
+        final Rectangle bounds = new Rectangle(x, y, boxW, boxH);
+
+        final Point2D center = new Point2D.Double(bounds.getCenterX(), bounds.getCenterY());
+        final StaffManager staffManager = sheet.getStaffManager();
+        final List<Staff> staves = staffManager.getStavesOf(center);
+        if (staves.isEmpty()) {
+            writeJson(ex, 400, "{\"error\":\"no staff near point\",\"x\":" + x + ",\"y\":" + y
+                    + "}");
+            return;
+        }
+        staves.sort(Comparator.comparingDouble(s -> s.distanceTo(center)));
+        final Staff staff = staves.get(0);
+        final SystemInfo system = staff.getSystem();
+        final SIGraph sig = system.getSig();
+
+        ghost.setManual(true);
+        ghost.setStaff(staff);
+        ghost.setBounds(bounds);
+
+        final Collection<Link> links = new ArrayList<>(ghost.searchLinks(system));
+
+        final AdditionTask task = new AdditionTask(sig, ghost, bounds, links);
+        runTask(task, stub);
+
+        writeJson(ex, 200, "{\"ok\":true,\"action\":\"added\",\"id\":" + ghost.getId()
+                + ",\"shape\":" + jsonString(shape.name())
+                + ",\"links\":" + links.size()
+                + ",\"canUndo\":" + canUndo()
+                + ",\"canRedo\":" + canRedo()
+                + ",\"dirty\":" + (book.isModified() || book.isDirty()) + "}");
+    }
+
+    /** A reasonable default symbol side (px) based on the sheet interline. */
+    private static int defaultSide (Sheet sheet)
+    {
+        try {
+            return Math.max(8, sheet.getInterline());
+        } catch (RuntimeException ignored) {
+            return 20;
+        }
+    }
 
     private void runTask (UITask task,
                           SheetStub stub)
@@ -584,6 +690,41 @@ public class OmrApiServer
             return null;
         }
         return json.substring(q1 + 1, q2);
+    }
+
+    /** Tiny extractor for a numeric JSON value, e.g. {@code "x":123} or {@code "x":123.4}. */
+    private static Integer extractJsonInt (String json,
+                                           String key)
+    {
+        if (json == null) {
+            return null;
+        }
+        final String needle = "\"" + key + "\"";
+        final int k = json.indexOf(needle);
+        if (k < 0) {
+            return null;
+        }
+        final int colon = json.indexOf(':', k + needle.length());
+        if (colon < 0) {
+            return null;
+        }
+        int i = colon + 1;
+        while (i < json.length() && Character.isWhitespace(json.charAt(i))) {
+            i++;
+        }
+        final int start = i;
+        while (i < json.length()
+                && ("+-.0123456789eE".indexOf(json.charAt(i)) >= 0)) {
+            i++;
+        }
+        if (i == start) {
+            return null;
+        }
+        try {
+            return (int) Math.round(Double.parseDouble(json.substring(start, i)));
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
     }
 
     private static String format (double v)

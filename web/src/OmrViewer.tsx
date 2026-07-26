@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  type MouseEvent as ReactMouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import './OmrViewer.css'
 
 /** One Audiveris Inter, bounds in sheet image pixel coordinates. */
@@ -75,6 +82,28 @@ const TEXT_ROLES = [
 
 type Layer = 'all' | 'music' | 'text' | 'lyrics' | 'chords' | 'title' | 'direction'
 
+/** Curated shapes for manual add (P6). Names must match Audiveris {@code Shape} enum. */
+const ADD_SHAPES: { group: string; shapes: string[] }[] = [
+  { group: 'Nốt', shapes: ['NOTEHEAD_BLACK', 'NOTEHEAD_VOID', 'WHOLE_NOTE', 'BREVE'] },
+  { group: 'Thân / Đuôi', shapes: ['STEM', 'FLAG_1', 'FLAG_2', 'FLAG_3'] },
+  { group: 'Dấu chấm', shapes: ['AUGMENTATION_DOT'] },
+  {
+    group: 'Dấu lặng',
+    shapes: ['WHOLE_REST', 'HALF_REST', 'QUARTER_REST', 'EIGHTH_REST', 'ONE_16TH_REST'],
+  },
+  { group: 'Hóa biểu', shapes: ['SHARP', 'FLAT', 'NATURAL', 'DOUBLE_SHARP', 'DOUBLE_FLAT'] },
+  { group: 'Khóa nhạc', shapes: ['G_CLEF', 'F_CLEF', 'C_CLEF'] },
+  {
+    group: 'Số chỉ nhịp',
+    shapes: ['COMMON_TIME', 'CUT_TIME', 'TIME_FOUR_FOUR', 'TIME_THREE_FOUR', 'TIME_SIX_EIGHT'],
+  },
+  { group: 'Vạch nhịp', shapes: ['THIN_BARLINE', 'THICK_BARLINE', 'FINAL_BARLINE'] },
+  {
+    group: 'Diễn tấu',
+    shapes: ['STACCATO', 'ACCENT', 'TENUTO', 'FERMATA', 'TUPLET_THREE'],
+  },
+]
+
 interface EditStatus {
   canUndo: boolean
   canRedo: boolean
@@ -144,6 +173,7 @@ export default function OmrViewer() {
   const [typeFilter, setTypeFilter] = useState('*')
   const [maxGrade, setMaxGrade] = useState(1)
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [addShape, setAddShape] = useState<string>('')
   const [busy, setBusy] = useState(false)
   const [edit, setEdit] = useState<EditStatus>({
     canUndo: false,
@@ -241,6 +271,35 @@ export default function OmrViewer() {
       )
     },
     [selectedId, mutate],
+  )
+
+  const addInterAt = useCallback(
+    (sheetX: number, sheetY: number) => {
+      if (!addShape) return
+      void mutate(`Thêm ${addShape}`, () =>
+        fetch('/api/sheet/1/inter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            shape: addShape,
+            x: Math.round(sheetX),
+            y: Math.round(sheetY),
+          }),
+        }),
+      )
+    },
+    [addShape, mutate],
+  )
+
+  const onStageClick = useCallback(
+    (e: ReactMouseEvent<HTMLDivElement>) => {
+      if (!addShape) return
+      const rect = e.currentTarget.getBoundingClientRect()
+      const sheetX = (e.clientX - rect.left) / zoom
+      const sheetY = (e.clientY - rect.top) / zoom
+      addInterAt(sheetX, sheetY)
+    },
+    [addShape, zoom, addInterAt],
   )
 
   const undo = useCallback(() => {
@@ -450,6 +509,24 @@ export default function OmrViewer() {
         </div>
 
         {source === 'api' && (
+          <label className="omr-select omr-add">
+            + Thêm
+            <select value={addShape} onChange={(e) => setAddShape(e.target.value)}>
+              <option value="">— tắt —</option>
+              {ADD_SHAPES.map(({ group, shapes }) => (
+                <optgroup key={group} label={group}>
+                  {shapes.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+        )}
+
+        {source === 'api' && (
           <div className="omr-edit">
             <button type="button" disabled={busy || !edit.canUndo} onClick={undo}>
               Undo
@@ -463,13 +540,20 @@ export default function OmrViewer() {
           </div>
         )}
       </div>
+      {addShape && (
+        <div className="omr-toast omr-adding-hint">
+          Chế độ thêm: bấm lên bản nhạc để đặt <strong>{addShape}</strong> (auto gắn staff gần
+          nhất). Chọn “— tắt —” để thoát.
+        </div>
+      )}
       {edit.message && <div className="omr-toast">{edit.message}</div>}
 
       <div className="omr-body">
         <div className="omr-canvas" ref={canvasRef}>
           <div
-            className="omr-stage"
+            className={`omr-stage${addShape ? ' adding' : ''}`}
             style={{ width: data.width * zoom, height: data.height * zoom }}
+            onClick={onStageClick}
           >
             <img
               src={data.image}
